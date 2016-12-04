@@ -1,0 +1,96 @@
+#!/bin/sh
+
+# Log in syslog
+log()
+{
+	logger -t AudioPhono $1
+}
+
+# Enable USB Audio
+UsbAudioEN()
+{
+	echo out > /gpio/AudioUsbPW/direction && echo 1 > /gpio/AudioUsbPW/value
+}
+
+# Disable USB Audio
+UsbAudioDIS()
+{
+	echo out > /gpio/AudioUsbPW/direction && echo 0 > /gpio/AudioUsbPW/value
+}
+
+# Init SRC4392
+SRC4392Init()
+{
+	i2cset -y 2 0x70 0x08 0x40
+	i2cset -y 2 0x70 0x0D 0x09
+	i2cset -y 2 0x70 0x0E 0x01
+	i2cset -y 2 0x70 0x0F 0x22
+	i2cset -y 2 0x70 0x10 0x00
+	i2cset -y 2 0x70 0x11 0x00
+	i2cset -y 2 0x70 0x2D 0x06
+	i2cset -y 2 0x70 0x2E 0x04
+	i2cset -y 2 0x70 0x2F 0x00
+	i2cset -y 2 0x70 0x03 0x3F
+	i2cset -y 2 0x70 0x04 0x00
+	#Ne pas lire registre 0x01 sinon reset de tout les registres
+	i2cset -y 2 0x70 0x01 0x33
+}
+
+# Init PCM1792A
+PCM1792AInit()
+{
+	i2cset -y 2 0x4f 0x10 200 
+	i2cset -y 2 0x4f 0x11 200
+	i2cset -y 2 0x4f 0x12 0xA0
+}
+
+# Reset SRC4392
+SRC4392Reset()
+{
+	i2cset -y 2 0x70 0x01 0x80
+	i2cget -y 2 0x70 0x01
+} 
+
+# Reset PCM1792A 
+PCM1792AReset()
+{
+	i2cset -y 2 0x4f 0x14 0x40
+} 
+
+case $1 in
+  start)
+	UsbAudioEN
+	log "Power USB audio Card PCM2903C"
+	sleep 2
+	PCM1792AInit
+	log "Init PCM1792A"
+	SRC4392Init
+	log "Init SRC4392"
+	arecord -f dat -D default:CODEC | aplay -D default:OutPlayer
+	log "Start pipe phono"
+  ;;
+
+
+  stop)
+	killall arecord
+	killall aplay
+	log "Kill phono pipe"
+	SRC1792AReset
+	SRC4392Reset
+	log "Reset PCM1792A and SRC4392"
+
+  ;;
+  restart|force-reload)
+        $0 stop
+	sleep 1
+	$0 start
+  ;;
+
+  *)
+	N=/etc/init.d/AudioPhono
+	echo "Usage: $N {start|stop|restart|force-reload}" >&2
+	exit 1
+	;;
+esac
+
+exit 0 
