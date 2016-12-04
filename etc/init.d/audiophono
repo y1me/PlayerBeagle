@@ -1,5 +1,14 @@
 #!/bin/sh
 
+### BEGIN INIT INFO
+# Provides:             audiophono
+# Required-Start:       $all 
+# Required-Stop:        
+# Default-Start:        2 3 4 5
+# Default-Stop:         0 1 6
+# Short-Description:    audiophono
+### END INIT INFO
+
 # Log in syslog
 log()
 {
@@ -9,13 +18,32 @@ log()
 # Enable USB Audio
 UsbAudioEN()
 {
-	echo out > /gpio/AudioUsbPW/direction && echo 1 > /gpio/AudioUsbPW/value
+	
+	echo 60 > /sys/class/gpio/export
+	sleep 1
+	TEST=`ls /sys/class/gpio/gpio60`
+	while [ -z "$TEST" ]
+	do   
+	sleep 1
+	TEST=`ls /sys/class/gpio/gpio60`
+	log "$TEST"
+	done
+	echo out > /sys/class/gpio/gpio60/direction && echo 1 > /sys/class/gpio/gpio60/value
+	sleep 1
+	TEST=`aplay -l | grep OutPlayer`
+	while [ -z "$TEST" ]
+	do   
+	echo out > /sys/class/gpio/gpio60/direction && echo 1 > /sys/class/gpio/gpio60/value
+	sleep 1
+	TEST=`aplay -l | grep OutPlayer`
+	log "$TEST"
+	done
 }
 
 # Disable USB Audio
 UsbAudioDIS()
 {
-	echo out > /gpio/AudioUsbPW/direction && echo 0 > /gpio/AudioUsbPW/value
+	echo out > /sys/class/gpio/gpio60/direction && echo 0 > /sys/class/gpio/gpio60/value
 }
 
 # Init SRC4392
@@ -66,8 +94,8 @@ case $1 in
 	log "Init PCM1792A"
 	SRC4392Init
 	log "Init SRC4392"
-	arecord -f dat -D default:CODEC | aplay -D default:OutPlayer
-	log "Start pipe phono"
+	arecord -f dat -D default:CODEC | aplay -D default:OutPlayer &
+	log "Start pipe phono" 
   ;;
 
 
