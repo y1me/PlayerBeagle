@@ -1,11 +1,9 @@
 #!/bin/bash
-rm /tmp/CommandIHM
-touch /tmp/CommandIHM
+mkdir /ramtmp
+mount -t tmpfs -o size=10m tmpfs /ramtmp
+stty -F /dev/ttyO4 115200 cs8
+rm /ramtmp/CommandIHM
+touch /ramtmp/CommandIHM
 while read -r line < /dev/ttyO4; do
-	echo $line
-	echo $line >> /tmp/CommandIHM
+	echo $line >> /ramtmp/CommandIHM
 done 
-
-
-
-
