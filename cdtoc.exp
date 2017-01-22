@@ -1,0 +1,10 @@
+#!/usr/bin/expect -f
+
+
+spawn cdcd refresh
+
+expect ">"
+
+send 1\r
+
+expect eof

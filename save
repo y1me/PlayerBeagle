@@ -3,3 +3,5 @@ mplayer --cdrom-device=/dev/cdrom --cdda=paranoia=2 cdda://3 -cache 5000
 mplayer -ao alsa:device=hw=OutPlayer --cdrom-device=/dev/cdrom --cdda=paranoia=2 cdda://3 -cache 5000
 mplayer -ao alsa:device=hw=OutPlayer --cdrom-device=/dev/cdrom --cdda=paranoia=2 cdda:// -cache 5000
 mplayer -slave -quiet -input file=/tmp/music-control -ao alsa:device=hw=OutPlayer --cdrom-device=/dev/cdrom --cdda=paranoia=2 cdda:// -cache 5000 &> /tmp/mplayer.log
+cdcd tracks > /tmp/test
+./cdtoc.exp &>/dev/null >/tmp/test
