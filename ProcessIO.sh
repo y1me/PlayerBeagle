@@ -1,8 +1,8 @@
 #!/bin/bash
 
 while true; do
-	line=$(head -n 1 /tmp/CommandIHM)
-	sed -i 1d /tmp/CommandIHM
+	line=$(head -n 1 /ramtmp/CommandIHM)
+	sed -i 1d /ramtmp/CommandIHM
 	case "$line" in
 		POWER)
 			echo "test 1"
@@ -18,8 +18,7 @@ while true; do
 			echo $line;;
 		*)
 	esac
+sleep 0.3
 
 
-
-	sleep 1
 done
