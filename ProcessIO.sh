@@ -46,6 +46,7 @@ while true; do
 				touch /etc/cdplayer/cdplayer
 				log "set source cdplayer"
 			fi;;
+			SwitchSRC.sh
 		MUTE)
 			if [ ! -f /ramtmp/mute ]; then
 			   	touch /ramtmp/mute 
