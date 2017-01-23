@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Log in syslog
+log()
+{
+	logger -t ProcessIO $1
+}
+
 while true; do
 	line=$(head -n 1 /ramtmp/CommandIHM)
 	sed -i 1d /ramtmp/CommandIHM
