@@ -2,12 +2,14 @@
 
 ### BEGIN INIT INFO
 # Provides:             audioplayer
-# Required-Start:       $all 
+# Required-Start:       $local_fs $network $remote_fs $all 
 # Required-Stop:        
-# Default-Start:        2 3 4 5
+# Default-Start:        3 5
 # Default-Stop:         0 1 6
 # Short-Description:    audioplayer
 ### END INIT INFO
+
+PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 # Log in syslog
 log()
@@ -85,6 +87,24 @@ PCM1792AReset()
 	i2cset -y 2 0x4f 0x14 0x40
 } 
 
+
+# Star IHM
+StartIHM()
+{
+#	TEST=`ps -a | grep Read`
+#	while [ -z "$TEST" ]
+#	do   
+#	sleep 1
+	ReadIHM.sh &
+#	log "state:$TEST"
+#	done
+}
+
+# Disable USB Audio
+UsbAudioDIS()
+{
+	echo out > /sys/class/gpio/gpio60/direction && echo 0 > /sys/class/gpio/gpio60/value
+}
 case $1 in
   start)
 	UsbAudioEN
@@ -92,11 +112,14 @@ case $1 in
 	sleep 2
 	PCM1792AInit
 	log "Init PCM1792A"
+	sleep 2
 	SRC4392Init
 	log "Init SRC4392"
-	ReadIHM.sh &
+	sleep 1;
+	StartIHM
 	log "Start IHM input"
-	ProcessIO.sh
+	sleep 1;
+	ProcessIO.sh &
 	log "Start Process managing"	
  
   ;;
@@ -105,7 +128,7 @@ case $1 in
   stop)
 	KillAllAudio.sh
 	log "Kill Audio"
-	SRC1792AReset
+	PCM1792AReset
 	SRC4392Reset
 	log "Reset PCM1792A and SRC4392"
 

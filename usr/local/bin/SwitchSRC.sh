@@ -1,28 +1,27 @@
 #!/bin/bash
 
 
+log()
+{
+	logger -t AudioService $1
+}
+
 if [ -f /etc/cdplayer/phono ]; then
-	KillAllAudio.sh
-	arecord -f dat -D default:CODEC | aplay -D default:OutPlayer &
-	log "Start pipe phono"
+	arecord -f dat -D hw:1,0 | aplay -D hw:0,0 &
+	WriteInfo.sh "phono"
 elif [ -f /etc/cdplayer/spdif1 ]; then
-	rm /etc/cdplayer/spdif1
-	touch /etc/cdplayer/spdif2
-	log "set source spdif2"
+	KillPhono.sh
+	WriteInfo.sh "spdif1"
 elif [ -f /etc/cdplayer/spdif2 ]; then
-	rm /etc/cdplayer/spdif2
-	touch /etc/cdplayer/analog
-	log "set source analog"
+	KillPhono.sh
+	WriteInfo.sh "spdif2"
 elif [ -f /etc/cdplayer/analog ]; then
-	rm /etc/cdplayer/analog
-	touch /etc/cdplayer/cdplayer
-	log "set source cdplayer"
+	KillPhono.sh
+	WriteInfo.sh "anlg"
 elif [ -f /etc/cdplayer/cdplayer ]; then
-	rm /etc/cdplayer/cdplayer
-	touch /etc/cdplayer/mpd
-	log "set source mpd"
+	KillPhono.sh
+	WriteInfo.sh "cd"
 elif [ -f /etc/cdplayer/mpd ]; then
-	rm /etc/cdplayer/mpd
-	touch /etc/cdplayer/phono
-	log "set source phono"
+	KillPhono.sh
+	WriteInfo.sh "mpd"
 fi
