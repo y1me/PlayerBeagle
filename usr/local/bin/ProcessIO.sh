@@ -7,15 +7,20 @@ log()
 }
 
 while true; do
-	line=$(head -n 1 /ramtmp/CommandIHM)
-	sed -i 1d /ramtmp/CommandIHM
+	sleep 0.1
+	if [ -s /ramtmp/CommandIHM ]; then
+		line=$(head -n 1 /ramtmp/CommandIHM)
+		sed -i 1d /ramtmp/CommandIHM
+	fi
 	case "$line" in
 		POWER)
 			echo "test 1"
-			echo $line;;
+			echo $line
+			line="";;
 		RESET)
 			echo "test 2"
-			echo $line;;
+			echo $line
+			line="";;
 		SOURCE)
 			if [ -f /etc/cdplayer/phono ]; then
 				rm /etc/cdplayer/phono
@@ -47,7 +52,7 @@ while true; do
 				log "set source cdplayer"
 			fi
 			SwitchSRC.sh
-			;;
+			line="";;
 		MUTE)
 			if [ ! -f /ramtmp/mute ]; then
 			   	touch /ramtmp/mute 
@@ -59,7 +64,8 @@ while true; do
 				log "mute off"
 				PCM1792AMute.sh OFF
 				WriteInfo.sh sound
-			fi;;
+			fi
+			line="";;
 		VOLUP)
 			if [ ! -f /etc/cdplayer/Volume.conf ]; then
 				mkdir /etc/cdplayer
@@ -81,7 +87,8 @@ while true; do
 			else
 				log "Volume max"
 				WriteInfo.sh "0db"
-			fi;;
+			fi
+			line="";;
 		VOLDW)
 			if [ ! -f /etc/cdplayer/Volume.conf ]; then
 				mkdir /etc/cdplayer
@@ -103,10 +110,10 @@ while true; do
 			else
 				log "Volume min"
 				WriteInfo.sh "-128db"
-			fi;;
+			fi
+			line="";;
 		*)
 	esac
-sleep 0.3
 
 
 done
