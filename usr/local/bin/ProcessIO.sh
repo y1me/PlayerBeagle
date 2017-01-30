@@ -14,8 +14,9 @@ while true; do
 	fi
 	case "$line" in
 		POWER)
-			echo "test 1"
-			echo $line
+			if [ -f /etc/cdplayer/cdplayer ]; then
+				ejectcd.sh
+			fi
 			line="";;
 		RESET)
 			echo "test 2"
