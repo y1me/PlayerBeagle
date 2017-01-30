@@ -6,6 +6,7 @@ if trayopen /dev/cdrom; then
 	if  checkdisc /dev/cdrom; then
 		WriteInfo.sh "nodisc"
 	else
+		export HOME=/root/
 		cdtoc.exp > /dev/null 2>&1
 		cdcd tracks > /ramtmp/toc
 		WriteInfo.sh "discok"
