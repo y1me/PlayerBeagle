@@ -7,7 +7,7 @@ log()
 }
 
 if [ -f /etc/cdplayer/phono ]; then
-	arecord -f dat -D hw:1,0 | aplay -D hw:0,0 &
+	SetPhono.sh
 	WriteInfo.sh "phono"
 elif [ -f /etc/cdplayer/spdif1 ]; then
 	KillPhono.sh
@@ -19,6 +19,7 @@ elif [ -f /etc/cdplayer/analog ]; then
 	KillPhono.sh
 	WriteInfo.sh "anlg"
 elif [ -f /etc/cdplayer/cdplayer ]; then
+	SetCD.sh
 	KillPhono.sh
 	WriteInfo.sh "cd"
 elif [ -f /etc/cdplayer/mpd ]; then

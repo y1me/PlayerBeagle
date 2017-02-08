@@ -16,6 +16,9 @@ while true; do
 		POWER)
 			if [ -f /etc/cdplayer/cdplayer ]; then
 				ejectcd.sh
+				if [ -f /ramtmp/toc ]; then
+					ParseTOC.py -b > /ramtmp/Ttracks				
+				fi
 			fi
 			line="";;
 		RESET)
@@ -39,6 +42,9 @@ while true; do
 				rm /etc/cdplayer/analog
 				touch /etc/cdplayer/cdplayer
 				log "set source cdplayer"
+				if [ -f /ramtmp/toc ]; then
+					ParseTOC.py -b > /ramtmp/Ttracks				
+				fi
 			elif [ -f /etc/cdplayer/cdplayer ]; then
 				rm /etc/cdplayer/cdplayer
 				touch /etc/cdplayer/mpd
