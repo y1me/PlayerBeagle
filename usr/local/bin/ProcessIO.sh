@@ -16,8 +16,26 @@ while true; do
 		POWER)
 			if [ -f /etc/cdplayer/cdplayer ]; then
 				ejectcd.sh
+				if [ -f /ramtmp/CDTrayClose ]; then
+					sleep 3
+					checkcd.sh
+				fi
+				if [ -f /ramtmp/toc ]; then
+					ParseTOC.py -b > /ramtmp/Ttracks
+					echo "1" > /ramtmp/Ctracks
+				fi
+			fi
+			line="";;
+		MENU)
+			if [ -f /etc/cdplayer/cdplayer ]; then
+				if [ ! -f /ramtmp/CDTrayClose ]; then
+					ejectcd.sh
+					sleep 3
+					checkcd.sh
+				fi
 				if [ -f /ramtmp/toc ]; then
 					ParseTOC.py -b > /ramtmp/Ttracks				
+					echo "1" > /ramtmp/Ctracks
 				fi
 			fi
 			line="";;
