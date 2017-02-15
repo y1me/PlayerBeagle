@@ -7,6 +7,7 @@ log()
 }
 
 while true; do
+
 	sleep 0.1
 	if [ -s /ramtmp/CommandIHM ]; then
 		line=$(head -n 1 /ramtmp/CommandIHM)
@@ -37,6 +38,18 @@ while true; do
 					ParseTOC.py -b > /ramtmp/Ttracks				
 					echo "1" > /ramtmp/Ctracks
 				fi
+			fi
+			if [ -f /ramtmp/cdcontrol ]; then
+				mkfifo /ramtmp/cdcontrol
+			fi
+			1stTrack=$(cat /ramtmp/Ctracks) 
+			if aplay -l | grep "OutPlayer" | grep "card 0" &>/dev/null; then
+				mplayer -slave  --cdrom-device=/dev/cdrom --cdda=paranoia=2 cdda://$1stTrack -ao alsa:device=hw=0.0  -input file=/ramtmp/cdcontrol -idle &>/ramtmp/mplayer.log 2>/ramtmp/mplayer-err.log -cache 5000 &
+			fi
+			line="";;
+		DOWN)
+			if [ -f /etc/cdplayer/cdplayer ]; then
+				killall mplayer
 			fi
 			line="";;
 		RESET)
