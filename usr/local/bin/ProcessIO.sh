@@ -1,56 +1,139 @@
 #!/bin/bash
 
+FCMD="/ramtmp/CommandIHM"
+CDMD="/etc/cdplayer/cdplayer"
+CDTRCL="/ramtmp/CDTrayClose"
+TOC="/ramtmp/toc"
+TTR="/ramtmp/Ttracks"
+CTR="/ramtmp/Ctracks"
+CDPLAY="/ramtmp/CDisPlaying"
+CDPAUSE="/ramtmp/CDisPausing"
+CDCTRL="/ramtmp/cdcontrol"
 # Log in syslog
 log()
 {
 	logger -t ProcessIO $1
 }
 
+# Eject CD
+EjectCD()
+{
+	if [ -f $CDMD ]; then
+		ejectcd.sh
+		if [ -f $CDTRCL ]; then
+			rm $CDPLAY
+			rm $CDPAUSE
+			sleep 3
+			checkcd.sh
+		fi
+		if [ -f $TOC ]; then
+			ParseTOC.py -b > $TTR
+			echo "1" > $CTR
+		fi
+	fi
+}
+
+# Stop CD
+StopCD()
+{
+	if [ -f $CDMD ]; then
+		if [ -f $CDPLAY ]; then
+			killall mplayer
+			rm $CDPLAY
+		fi
+		if [ -f $CDPAUSE ]; then
+			rm $CDPAUSE
+		fi
+		WriteInfo.sh stop
+	fi
+
+}
+
+# Next Tracks CD
+NextTracksCD()
+{
+	if [ -f $CDMD ]; then
+		if [ -f $CDPLAY ]; then
+			echo "seek_chapter 1 0" > $CDCTRL
+		fi
+	fi
+
+}
+
+# Previous Tracks CD
+PrevTracksCD()
+{
+	if [ -f $CDMD ]; then
+		if [ -f $CDPLAY ]; then
+			echo "seek_chapter -1 0" > $CDCTRL
+		fi
+	fi
+
+}
+
+# Play/Pause CD
+PlayPauseCD()
+{
+	if [ -f $CDMD ]; then
+		if [ ! -f $CDTRCL ]; then
+			ejectcd.sh
+			sleep 3
+			checkcd.sh
+		
+			if [ -f $TOC ]; then
+				ParseTOC.py -b > $TTR				
+				echo "1" > $CTR
+			fi
+		fi
+	fi
+	if [ ! -f $CDCTRL ] ; then
+		mkfifo $CDCTRL
+	fi
+	if [ ! -f $CDPLAY ]; then
+		if aplay -l | grep "OutPlayer" | grep "card 0" &>/dev/null; then
+			mplayer -slave  --cdrom-device=/dev/cdrom --cdda=paranoia=2 cdda://$(cat $CTR)-$(cat $TTR) -ao alsa:device=hw=0.0  -input file=$CDCTRL -idle &>/ramtmp/mplayer.log 2>/ramtmp/mplayer-err.log -cache 1000 &
+		else
+			mplayer -slave  --cdrom-device=/dev/cdrom --cdda=paranoia=2 cdda://$(cat $CTR)-$(cat $TTR) -ao alsa:device=hw=1.0  -input file=$CDCTRL -idle &>/ramtmp/mplayer.log 2>/ramtmp/mplayer-err.log -cache 1000 &
+		fi
+		touch $CDPLAY
+		WriteInfo.sh play
+	else
+		if [ ! -f $CDPAUSE ]; then
+			touch $CDPAUSE
+			echo "pause" > $CDCTRL
+			WriteInfo.sh pause
+		else
+			rm $CDPAUSE
+			echo "pause" > $CDCTRL
+			WriteInfo.sh play
+		fi
+			
+	fi
+		
+}
+
 while true; do
 
 	sleep 0.1
-	if [ -s /ramtmp/CommandIHM ]; then
-		line=$(head -n 1 /ramtmp/CommandIHM)
-		sed -i 1d /ramtmp/CommandIHM
+	if [ -s $FCMD ]; then
+		line=$(head -n 1 $FCMD)
+		sed -i 1d $FCMD
 	fi
 	case "$line" in
 		POWER)
-			if [ -f /etc/cdplayer/cdplayer ]; then
-				ejectcd.sh
-				if [ -f /ramtmp/CDTrayClose ]; then
-					sleep 3
-					checkcd.sh
-				fi
-				if [ -f /ramtmp/toc ]; then
-					ParseTOC.py -b > /ramtmp/Ttracks
-					echo "1" > /ramtmp/Ctracks
-				fi
-			fi
+			EjectCD
 			line="";;
 		MENU)
-			if [ -f /etc/cdplayer/cdplayer ]; then
-				if [ ! -f /ramtmp/CDTrayClose ]; then
-					ejectcd.sh
-					sleep 3
-					checkcd.sh
-				fi
-				if [ -f /ramtmp/toc ]; then
-					ParseTOC.py -b > /ramtmp/Ttracks				
-					echo "1" > /ramtmp/Ctracks
-				fi
-			fi
-			if [ -f /ramtmp/cdcontrol ]; then
-				mkfifo /ramtmp/cdcontrol
-			fi
-			1stTrack=$(cat /ramtmp/Ctracks) 
-			if aplay -l | grep "OutPlayer" | grep "card 0" &>/dev/null; then
-				mplayer -slave  --cdrom-device=/dev/cdrom --cdda=paranoia=2 cdda://$1stTrack -ao alsa:device=hw=0.0  -input file=/ramtmp/cdcontrol -idle &>/ramtmp/mplayer.log 2>/ramtmp/mplayer-err.log -cache 5000 &
-			fi
+			PlayPauseCD
+			line="";;
+		RIGHT)
+			NextTracksCD
+			line="";;
+		LEFT)
+			PrevTracksCD
 			line="";;
 		DOWN)
-			if [ -f /etc/cdplayer/cdplayer ]; then
-				killall mplayer
-			fi
+			StopCD
 			line="";;
 		RESET)
 			echo "test 2"
@@ -71,22 +154,24 @@ while true; do
 				log "set source analog"
 			elif [ -f /etc/cdplayer/analog ]; then
 				rm /etc/cdplayer/analog
-				touch /etc/cdplayer/cdplayer
+				touch $CDMD
 				log "set source cdplayer"
-				if [ -f /ramtmp/toc ]; then
-					ParseTOC.py -b > /ramtmp/Ttracks				
+				if [ -f $TOC ]; then
+					ParseTOC.py -b > $TTR				
 				fi
-			elif [ -f /etc/cdplayer/cdplayer ]; then
-				rm /etc/cdplayer/cdplayer
+			elif [ -f $CDMD ]; then
+				rm $CDMD
 				touch /etc/cdplayer/mpd
 				log "set source mpd"
 			elif [ -f /etc/cdplayer/mpd ]; then
 				rm /etc/cdplayer/mpd
 				touch /etc/cdplayer/phono
+
+
 				log "set source phono"
 			else
 				mkdir /etc/cdplayer
-				touch /etc/cdplayer/cdplayer
+				touch $CDMD
 				log "set source cdplayer"
 			fi
 			SwitchSRC.sh
@@ -125,6 +210,7 @@ while true; do
 			else
 				log "Volume max"
 				WriteInfo.sh "0db"
+
 			fi
 			line="";;
 		VOLDW)
