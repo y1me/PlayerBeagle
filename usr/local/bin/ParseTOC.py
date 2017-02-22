@@ -2,7 +2,31 @@
 import argparse
 
 TOC="/ramtmp/toc"
+TOCABS="/ramtmp/tocabsolute"
 
+
+def FormatTocABS():
+	"""convert tracks duration in seconds
+	"""
+	i=1
+	result=""
+	seconds=0.00
+	fout=open(TOCABS,'w')
+	with open(TOC,'r') as f:
+		for line in f:
+			if line.count("[") == 1:
+				length=line[line.find("[")+1:line.find("]")]
+				#print length
+				#print length.partition(':')[0]
+				#print length.partition(':')[1]
+				#print length.partition(':')[2]
+				tr=float( length.partition(':')[0] ) * 60.00 + float( length.partition(':')[2] )
+				#print tr
+				seconds = seconds + tr
+				#print round(seconds,1) 
+				#print seconds
+				fout.write(str(round(seconds,1)) + "\n") 
+	fout.close()
 
 def TrackTitle(number):
 	"""find and return a track title
@@ -18,6 +42,7 @@ def TrackTitle(number):
 				return line.partition(']')[-1].strip()
 			i+=1
 		return result
+
 
 def AlbumTitle():
 	"""find and return a Album title
@@ -102,6 +127,9 @@ parser.add_argument("-l","--disclength",
 parser.add_argument("-c","--disctotal",
                     help="return total tracks and disc length" ,
 		    action="store_true")
+parser.add_argument("-d","--toctoseconds",
+                    help="format toc to seek tracks" ,
+		    action="store_true")
                     
 args = parser.parse_args()
 if args.TrackNumber:
@@ -118,3 +146,5 @@ if args.disctotal:
 	total=TotalTracks()+DiscLength()
 	total=total.replace(":","")
 	print total
+if args.toctoseconds:
+	total=FormatTocABS()
