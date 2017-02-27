@@ -86,7 +86,7 @@ PlayPauseCD()
 			fi
 		fi
 	fi
-	if [ ! -f $CDCTRL ] ; then
+	if [ ! -e $CDCTRL ] ; then
 		mkfifo $CDCTRL
 	fi
 	if [ ! -f $CDPLAY ]; then
@@ -121,6 +121,7 @@ while true; do
 	fi
 	case "$line" in
 		POWER)
+			StopCD
 			EjectCD
 			line="";;
 		MENU)
