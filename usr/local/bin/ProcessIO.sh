@@ -38,7 +38,7 @@ StopCD()
 {
 	if [ -f $CDMD ]; then
 		if [ -f $CDPLAY ]; then
-			killall mplayer
+			pkill mplayer
 			rm $CDPLAY
 		fi
 		if [ -f $CDPAUSE ]; then

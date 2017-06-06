@@ -6,8 +6,8 @@ log()
 	logger -t AudioService $1
 }
 
-killall ReadIHM.sh
-killall ProcessIO.sh
-killall arecord
-killall aplay
+pkill ReadIHM.sh
+pkill ProcessIO.sh
+pkill arecord
+pkill aplay
 log "Kill cd player service"
