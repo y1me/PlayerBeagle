@@ -1,0 +1,48 @@
+#!/bin/sh
+
+### BEGIN INIT INFO
+# Provides:             gpioinit 
+# Required-Start:       $local_fs $network $remote_fs $all 
+# Required-Stop:        
+# Default-Start:        3 5
+# Default-Stop:         0 1 6
+# Short-Description:    gpioinit
+### END INIT INFO
+
+PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+# Log in syslog
+log()
+{
+	logger -t AudioPlayer $1
+}
+
+case $1 in
+  start)
+        mkdir /gpio
+	ln -s /sys/class/gpio/gpio60 /gpio/AudioUsbPW
+
+	log "Create gpio link"	
+ 
+  ;;
+
+  stop)
+  	rm -r /gpio
+	log "remove gpio link"	
+
+  ;;
+
+  restart|force-reload)
+        $0 stop
+	sleep 1
+	$0 start
+  ;;
+
+  *)
+	N=/etc/init.d/gpioinit
+	echo "Usage: $N {start|stop|restart|force-reload}" >&2
+	exit 1
+	;;
+esac
+
+exit 0 
