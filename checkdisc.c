@@ -36,8 +36,23 @@ switch(result) {
   }
   /* Check CD tray status */
   if (ioctl(cdrom,CDROM_DRIVE_STATUS) == CDS_NO_DISC) {
-    status=0;
-    //printf("No Disc\n");
+    status=10;
+  }
+
+  if (ioctl(cdrom,CDROM_DRIVE_STATUS) == CDS_NO_INFO) {
+    status=15;
+  }
+
+  if (ioctl(cdrom,CDROM_DRIVE_STATUS) == CDS_TRAY_OPEN) {
+    status=20;
+  }
+  
+  if (ioctl(cdrom,CDROM_DRIVE_STATUS) == CDS_DRIVE_NOT_READY) {
+    status=25;
+  }
+  
+  if (ioctl(cdrom,CDROM_DRIVE_STATUS) == CDS_DISC_OK) {
+    status=30;
   }
   close(cdrom);
   exit(status);
