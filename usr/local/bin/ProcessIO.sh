@@ -23,7 +23,7 @@ EjectCD()
 		if [ -f $CDTRCL ]; then
 			rm $CDPLAY
 			rm $CDPAUSE
-			sleep 3
+			#sleep 3
 			checkcd.sh
 		fi
 		if [ -f $TOC ]; then
@@ -77,7 +77,7 @@ PlayPauseCD()
 	if [ -f $CDMD ]; then
 		if [ ! -f $CDTRCL ]; then
 			ejectcd.sh
-			sleep 3
+			#sleep 3
 			checkcd.sh
 		
 			if [ -f $TOC ]; then
