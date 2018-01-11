@@ -17,6 +17,9 @@ http://www.alsa-project.org/main/index.php/Changing_card_IDs_with_udev
 ## GPIO 
 copy "gpioinit" to etc/init.d and run "update-rc.d gpioinit defaults"
 
-
+## Config cape
+enable UART4
+disable ADC,HDMI,WIRELESS
+https://elinux.org/Beagleboard:BeagleBoneBlack_Debian#U-Boot_Overlays
 
 
