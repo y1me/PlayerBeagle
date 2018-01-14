@@ -20,6 +20,9 @@ log()
 case $1 in
   start)
         mkdir /gpio
+        if [ ! -d "/sys/class/gpio/gpio60" ]; then 
+            echo 60 > /sys/class/gpio/export 
+        fi
 	ln -s /sys/class/gpio/gpio60 /gpio/AudioUsbPW
 	log "Create gpio link"	
         echo out > /gpio/AudioUsbPW/direction
