@@ -1,4 +1,8 @@
 #!/bin/bash
 
-pkill arecord
-pkill aplay
+AudioDIS.sh
+sleep 1
+AudioEN.sh
+
+#pkill arecord
+#pkill aplay

@@ -107,15 +107,9 @@ UsbAudioDIS()
 }
 case $1 in
   start)
-	UsbAudioEN
-	log "Power USB audio Card PCM2903C"
-	sleep 2
-	PCM1792AInit
-	log "Init PCM1792A"
-	sleep 2
-	SRC4392Init
-	log "Init SRC4392"
-	sleep 1;
+	AudioEN.sh
+	log "Power USB Device"
+        InitDac.sh
 	StartIHM
 	log "Start IHM input"
 	sleep 1;
