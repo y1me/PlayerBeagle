@@ -23,10 +23,16 @@ case $1 in
         if [ ! -d "/sys/class/gpio/gpio60" ]; then 
             echo 60 > /sys/class/gpio/export 
         fi
-	ln -s /sys/class/gpio/gpio60 /gpio/AudioUsbPW
+        if [ ! -d "/sys/class/gpio/gpio48" ]; then 
+            echo 48 > /sys/class/gpio/export 
+        fi
+	ln -s /sys/class/gpio/gpio60 /gpio/UsbPW
+	ln -s /sys/class/gpio/gpio48 /gpio/AudioOutPW
 	log "Create gpio link"	
-        echo out > /gpio/AudioUsbPW/direction
-        echo 1 > /gpio/AudioUsbPW/value
+        echo out > /gpio/UsbPW/direction
+        echo out > /gpio/AudioOutPW/direction
+        echo 1 > /gpio/UsbPW/value
+        echo 1 > /gpio/AudioOutPW/value
 	log "config gpio out,high"	
  
   ;;
