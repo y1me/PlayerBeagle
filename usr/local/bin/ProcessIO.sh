@@ -163,31 +163,6 @@ VOLDWManage()
     fi
 }
 
-VOLDWManage()
-{
-    if [ ! -f /etc/cdplayer/Volume.conf ]; then
-        mkdir /etc/cdplayer
-        touch /etc/cdplayer/Volume.conf
-        echo "195" >> /etc/cdplayer/Volume.conf
-    fi
-    if [ -f /ramtmp/mute ]; then
-        rm /ramtmp/mute 
-        log "mute off"
-        PCM1792AMute.sh OFF
-    fi
-    read -r vol < /etc/cdplayer/Volume.conf
-    if  [ $vol -gt 0 ]; then
-        vol=$(($vol -2))
-        echo $vol > /etc/cdplayer/Volume.conf
-        PCM1792AVolume.sh $vol >> /dev/null
-        log "Volume send $vol"
-        WriteInfo.sh $((($vol-255)/2))"db"
-    else
-        log "Volume min"
-        WriteInfo.sh "-128db"
-    fi
-}
-
 MUTEManage()
 {
     if [ ! -f /ramtmp/mute ]; then
@@ -222,6 +197,8 @@ VolumeInit()
 }
 
 VolumeInit
+sleep 10
+SwitchSRC.sh
 while true; do
 
 	sleep 0.1
