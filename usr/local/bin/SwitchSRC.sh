@@ -7,7 +7,7 @@ log()
 }
 
 if [ -f /etc/cdplayer/phono ]; then
-	SetPhono.sh
+	DaemonPhono.sh &
 	WriteInfo.sh "phono"
 elif [ -f /etc/cdplayer/spdif1 ]; then
 	KillPhono.sh
