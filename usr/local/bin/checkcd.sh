@@ -37,10 +37,13 @@ RET=$?
 	if [ $RET -eq 30 ]; then
 		log  "disc ok"
 		export HOME=/root/
-		cdtoc.exp > /dev/null 2>&1
-		cdcd tracks > /ramtmp/toc
+		cdtoc.exp  > /dev/null 2>&1
+		log  "Retrieve TOC disc"
+		cdcd tracks  > /ramtmp/toc
+		log  "Copy TOC on /ramtmp/toc"
 		WriteInfo.sh "discok"
 		STATUS=0;
 	fi
 
 done
+exit 0
