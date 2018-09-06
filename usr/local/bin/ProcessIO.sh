@@ -9,6 +9,8 @@ CTR="/ramtmp/Ctracks"
 CDPLAY="/ramtmp/CDisPlaying"
 CDPAUSE="/ramtmp/CDisPausing"
 CDCTRL="/ramtmp/cdcontrol"
+VOLCF="/etc/cdplayer/Volume.conf"
+MUTE="/ramtmp/mute"
 # Log in syslog
 log()
 {
@@ -114,20 +116,20 @@ PlayPauseCD()
 
 VOLUPManage()
 {
-    if [ ! -f /etc/cdplayer/Volume.conf ]; then
+    if [ ! -f $VOLCF ]; then
         mkdir /etc/cdplayer
-        touch /etc/cdplayer/Volume.conf
-        echo "195" >> /etc/cdplayer/Volume.conf
+        touch $VOLCF
+        echo "195" >> $VOLCF
     fi
-    if [ -f /ramtmp/mute ]; then
-        rm /ramtmp/mute 
+    if [ -f $MUTE ]; then
+        rm $MUTE 
         log "mute off"
         PCM1792AMute.sh OFF
     fi
-    read -r vol < /etc/cdplayer/Volume.conf
+    read -r vol < $VOLCF
     if  [ $vol -lt 255 ]; then
         vol=$(($vol +2))
-        echo $vol > /etc/cdplayer/Volume.conf
+        echo $vol > $VOLCF
         PCM1792AVolume.sh $vol >> /dev/null
         log "Volume send $vol"
         WriteInfo.sh $((($vol-255)/2))"db"
@@ -140,20 +142,20 @@ VOLUPManage()
 
 VOLDWManage()
 {
-    if [ ! -f /etc/cdplayer/Volume.conf ]; then
+    if [ ! -f $VOLCF ]; then
         mkdir /etc/cdplayer
-        touch /etc/cdplayer/Volume.conf
-        echo "195" >> /etc/cdplayer/Volume.conf
+        touch $VOLCF
+        echo "195" >> $VOLCF
     fi
-    if [ -f /ramtmp/mute ]; then
-        rm /ramtmp/mute 
+    if [ -f $MUTE ]; then
+        rm $MUTE 
         log "mute off"
         PCM1792AMute.sh OFF
     fi
-    read -r vol < /etc/cdplayer/Volume.conf
+    read -r vol < $VOLCF
     if  [ $vol -gt 0 ]; then
         vol=$(($vol -2))
-        echo $vol > /etc/cdplayer/Volume.conf
+        echo $vol > $VOLCF
         PCM1792AVolume.sh $vol >> /dev/null
         log "Volume send $vol"
         WriteInfo.sh $((($vol-255)/2))"db"
@@ -165,13 +167,13 @@ VOLDWManage()
 
 MUTEManage()
 {
-    if [ ! -f /ramtmp/mute ]; then
-        touch /ramtmp/mute 
+    if [ ! -f $MUTE ]; then
+        touch $MUTE 
         log "mute on"
         PCM1792AMute.sh ON
         WriteInfo.sh mute
     else
-        rm /ramtmp/mute 
+        rm $MUTE 
         log "mute off"
         PCM1792AMute.sh OFF
         WriteInfo.sh sound
@@ -181,17 +183,17 @@ MUTEManage()
 
 VolumeInit()
 {
-    if [ ! -f /etc/cdplayer/Volume.conf ]; then
+    if [ ! -f $VOLCF ]; then
         mkdir /etc/cdplayer
-        touch /etc/cdplayer/Volume.conf
-        echo "195" >> /etc/cdplayer/Volume.conf
+        touch $VOLCF
+        echo "195" >> $VOLCF
     fi
-    if [ -f /ramtmp/mute ]; then
-        rm /ramtmp/mute 
+    if [ -f $MUTE ]; then
+        rm $MUTE 
         log "mute off"
     fi
     PCM1792AMute.sh OFF
-    read -r vol < /etc/cdplayer/Volume.conf
+    read -r vol < $VOLCF
     PCM1792AVolume.sh $vol >> /dev/null
     log "Volume send $vol"
 }
