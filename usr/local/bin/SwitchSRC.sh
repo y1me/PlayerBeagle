@@ -7,22 +7,25 @@ log()
 }
 
 if [ -f /etc/cdplayer/phono ]; then
+        AudioDIS.sh
+        sleep 1
+        AudioEN.sh
 	DaemonPhono.sh &
 	WriteInfo.sh "phono"
 elif [ -f /etc/cdplayer/spdif1 ]; then
-	KillPhono.sh
+        pkill DaemonPhono.sh
 	WriteInfo.sh "spdif1"
 elif [ -f /etc/cdplayer/spdif2 ]; then
-	KillPhono.sh
 	WriteInfo.sh "spdif2"
 elif [ -f /etc/cdplayer/analog ]; then
-	KillPhono.sh
 	WriteInfo.sh "anlg"
 elif [ -f /etc/cdplayer/cdplayer ]; then
-	SetCD.sh
-	KillPhono.sh
+        AudioDIS.sh
+        sleep 1
+        AudioEN.sh
+        sleep 3
+	DriveCD.sh -l
 	WriteInfo.sh "cd"
 elif [ -f /etc/cdplayer/mpd ]; then
-	KillPhono.sh
 	WriteInfo.sh "mpd"
 fi

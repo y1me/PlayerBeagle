@@ -2,6 +2,12 @@
 
 FCMD="/ramtmp/CommandIHM"
 CDMD="/etc/cdplayer/cdplayer"
+ANGMD="/etc/cdplayer/analog"
+SP1MD="/etc/cdplayer/spdif1"
+SP2MD="/etc/cdplayer/spdif2"
+MPDMD="/etc/cdplayer/mpd"
+PHMD="/etc/cdplayer/phono"
+DIRPL="/etc/cdplayer"
 CDTRCL="/ramtmp/CDTrayClose"
 TOC="/ramtmp/toc"
 TTR="/ramtmp/Ttracks"
@@ -117,7 +123,7 @@ PlayPauseCD()
 VOLUPManage()
 {
     if [ ! -f $VOLCF ]; then
-        mkdir /etc/cdplayer
+        mkdir $DIRPL
         touch $VOLCF
         echo "195" >> $VOLCF
     fi
@@ -143,7 +149,7 @@ VOLUPManage()
 VOLDWManage()
 {
     if [ ! -f $VOLCF ]; then
-        mkdir /etc/cdplayer
+        mkdir $DIRPL
         touch $VOLCF
         echo "195" >> $VOLCF
     fi
@@ -184,7 +190,7 @@ MUTEManage()
 VolumeInit()
 {
     if [ ! -f $VOLCF ]; then
-        mkdir /etc/cdplayer
+        mkdir $DIRPL
         touch $VOLCF
         echo "195" >> $VOLCF
     fi
@@ -230,37 +236,34 @@ while true; do
 			echo $line
 			line="";;
 		RGBVIDEO)
-			if [ -f /etc/cdplayer/phono ]; then
-				rm /etc/cdplayer/phono
-				touch /etc/cdplayer/spdif1
+			if [ -f $PHMD ]; then
+				rm $PHMD
+				touch $SP1MD
 				log "set source spdif1"
-			elif [ -f /etc/cdplayer/spdif1 ]; then
-				rm /etc/cdplayer/spdif1
-				touch /etc/cdplayer/spdif2
+			elif [ -f $SP1MD ]; then
+				rm $SP1MD
+				touch $SP2MD
 				log "set source spdif2"
-			elif [ -f /etc/cdplayer/spdif2 ]; then
-				rm /etc/cdplayer/spdif2
-				touch /etc/cdplayer/analog
+			elif [ -f $SP2MD ]; then
+				rm $SP2MD
+				touch $ANGMD
 				log "set source analog"
-			elif [ -f /etc/cdplayer/analog ]; then
-				rm /etc/cdplayer/analog
+			elif [ -f $ANGMD ]; then
+				rm $ANGMD
 				touch $CDMD
 				log "set source cdplayer"
-				if [ -f $TOC ]; then
-					ParseTOC.py -b > $TTR				
-				fi
 			elif [ -f $CDMD ]; then
 				rm $CDMD
-				touch /etc/cdplayer/mpd
+				touch $MPDMD
 				log "set source mpd"
-			elif [ -f /etc/cdplayer/mpd ]; then
-				rm /etc/cdplayer/mpd
-				touch /etc/cdplayer/phono
+			elif [ -f $MPDMD ]; then
+				rm $MPDMD
+				touch $PHMD
 
 
 				log "set source phono"
 			else
-				mkdir /etc/cdplayer
+				mkdir $DIRPL
 				touch $CDMD
 				log "set source cdplayer"
 			fi
