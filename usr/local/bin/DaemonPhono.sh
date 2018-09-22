@@ -1,5 +1,7 @@
 #!/bin/bash
-
+AudioDIS.sh
+sleep 1
+AudioEN.sh
 SetPhono.sh &
 sleep 1
 while true; do
