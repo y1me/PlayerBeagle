@@ -17,4 +17,4 @@ fi
 if [ ${#string} == 5 ]; then
 	echo "~#B= "$1"dummydummydummy" > /dev/ttyO4; exit
 fi
-	echo "~#B= "$1"dummydummydummy" > /dev/ttyO4; exit
+	echo "~#B="$1"dummydummydummy" > /dev/ttyO4; exit
