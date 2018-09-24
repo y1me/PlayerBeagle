@@ -13,7 +13,7 @@ checkdisc /dev/cdrom
 RET=$?
 	if [ $RET -eq 10 ]; then
 		log  "No disc"
-		WriteInfo.sh "nodisc"
+		WriteInfo.sh -r "nodisc"
 		if [ -e /ramtmp/toc ]; then
 			rm /ramtmp/toc
 		fi
@@ -26,12 +26,12 @@ RET=$?
 
 	if [ $RET -eq 20 ]; then
 		log  "Tray open"
-		WriteInfo.sh "open"
+		WriteInfo.sh -r "open"
 	fi
 
 	if [ $RET -eq 25 ]; then
 		log  "Drive not ready"
-		WriteInfo.sh "wait"
+		WriteInfo.sh -r "wait"
 	fi
 
 	if [ $RET -eq 30 ]; then
@@ -41,7 +41,7 @@ RET=$?
 		log  "Retrieve TOC disc"
 		cdcd tracks  > /ramtmp/toc
 		log  "Copy TOC on /ramtmp/toc"
-		WriteInfo.sh "discok"
+		WriteInfo.sh -r "discok"
 		STATUS=0;
 	fi
 

@@ -52,7 +52,7 @@ StopCD()
 		if [ -f $CDPAUSE ]; then
 			rm $CDPAUSE
 		fi
-		WriteInfo.sh stop
+		WriteInfo.sh -r stop
 	fi
 
 }
@@ -104,16 +104,16 @@ PlayPauseCD()
 			mplayer -slave  --cdrom-device=/dev/cdrom --cdda=paranoia=2 cdda://$(cat $CTR)-$(cat $TTR) -ao alsa:device=hw=1.0  -input file=$CDCTRL -idle &>/ramtmp/mplayer.log 2>/ramtmp/mplayer-err.log -cache 1000 &
 		fi
 		touch $CDPLAY
-		WriteInfo.sh play
+		WriteInfo.sh -s play
 	else
 		if [ ! -f $CDPAUSE ]; then
 			touch $CDPAUSE
 			echo "pause" > $CDCTRL
-			WriteInfo.sh pause
+			WriteInfo.sh -s pause
 		else
 			rm $CDPAUSE
 			echo "pause" > $CDCTRL
-			WriteInfo.sh play
+			WriteInfo.sh -s play
 		fi
 			
 	fi
@@ -138,10 +138,10 @@ VOLUPManage()
         echo $vol > $VOLCF
         PCM1792AVolume.sh $vol >> /dev/null
         log "Volume send $vol"
-        WriteInfo.sh $((($vol-255)/2))"db"
+        WriteInfo.sh -r $((($vol-255)/2))"db"
     else
         log "Volume max"
-        WriteInfo.sh "0db"
+        WriteInfo.sh -r "0db"
 
     fi
 }
@@ -164,10 +164,10 @@ VOLDWManage()
         echo $vol > $VOLCF
         PCM1792AVolume.sh $vol >> /dev/null
         log "Volume send $vol"
-        WriteInfo.sh $((($vol-255)/2))"db"
+        WriteInfo.sh -r $((($vol-255)/2))"db"
     else
         log "Volume min"
-        WriteInfo.sh "-128db"
+        WriteInfo.sh -r "-128db"
     fi
 }
 
@@ -177,12 +177,12 @@ MUTEManage()
         touch $MUTE 
         log "mute on"
         PCM1792AMute.sh ON
-        WriteInfo.sh mute
+        WriteInfo.sh -r mute
     else
         rm $MUTE 
         log "mute off"
         PCM1792AMute.sh OFF
-        WriteInfo.sh sound
+        WriteInfo.sh -r sound
     fi
 
 }
