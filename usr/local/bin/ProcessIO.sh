@@ -177,12 +177,12 @@ MUTEManage()
         touch $MUTE 
         log "mute on"
         PCM1792AMute.sh ON
-        WriteInfo.sh -r mute
+        WriteInfo.sh -r "mute"
     else
         rm $MUTE 
         log "mute off"
         PCM1792AMute.sh OFF
-        WriteInfo.sh -r sound
+        WriteInfo.sh -r "sound"
     fi
 
 }
