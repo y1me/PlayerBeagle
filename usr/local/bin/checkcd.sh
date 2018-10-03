@@ -41,7 +41,7 @@ RET=$?
 		log  "Retrieve TOC disc"
 		cdcd tracks  > /ramtmp/toc
 		log  "Copy TOC on /ramtmp/toc"
-		WriteInfo.sh -r "discok"
+                WriteInfo.sh -l "$(ParseTOC.py -a) $(ParseTOC.py -n)"
 		STATUS=0;
 	fi
 
