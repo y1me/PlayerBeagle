@@ -15,7 +15,8 @@ case $1 in
             echo "argument too short"
             exit 1
         fi
-	echo "~#"$CMD"="$2"~#" > /dev/ttyO4; exit 0
+        DATA="$(tr [A-Z] [a-z] <<< "$2")"
+	echo "~#"$CMD"="$DATA"~#" > /dev/ttyO4; exit 0
         ;;
     -r|--transient)
         CMD='D'

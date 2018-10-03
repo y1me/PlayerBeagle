@@ -19,11 +19,12 @@ elif [ -f /etc/cdplayer/spdif2 ]; then
 elif [ -f /etc/cdplayer/analog ]; then
 	WriteInfo.sh -s "anlg"
 elif [ -f /etc/cdplayer/cdplayer ]; then
-       # PCM1792AMute.sh OFF
-       # sleep 1
-       # AudioEN.sh
-       # sleep 3
-       #DriveCD.sh -l
+        LockCmd ON
+        ResetAudio.sh
+        sleep 3
+        DriveCD.sh -l
+        LockCmd OFF
+        PCM1792AMute.sh OFF
 	WriteInfo.sh -s "cd"
 elif [ -f /etc/cdplayer/mpd ]; then
 	WriteInfo.sh -s "mpd"
