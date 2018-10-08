@@ -1,6 +1,7 @@
 #!/bin/bash
 
 string=$2
+INFO="/ramtmp/inforunning"
 
 case $1 in
     -t|--time)
@@ -14,6 +15,9 @@ case $1 in
         if [ ${#string} -lt 10 ]; then
             echo "argument too short"
             exit 1
+        fi
+        if [ ! -f $INFO ]; then
+            touch $INFO
         fi
         DATA="$(tr [A-Z] [a-z] <<< "$2")"
 	echo "~#"$CMD"="$DATA"~#" > /dev/ttyO4; exit 0

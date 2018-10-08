@@ -17,6 +17,7 @@ CDPAUSE="/ramtmp/CDisPausing"
 CDCTRL="/ramtmp/cdcontrol"
 VOLCF="/etc/cdplayer/Volume.conf"
 MUTE="/ramtmp/mute"
+INFO="/ramtmp/inforunning"
 # Log in syslog
 log()
 {
@@ -277,6 +278,11 @@ while true; do
 			line="";;
 		VOLDW)
                     VOLDWManage
+			line="";;
+		ENDINFO)
+                    if [ -f $INFO ]; then
+                        rm $INFO
+                    fi
 			line="";;
 		*)
 	esac
