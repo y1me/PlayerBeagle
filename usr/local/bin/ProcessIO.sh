@@ -218,7 +218,7 @@ while true; do
 	case "$line" in
 		POWER)
 			#StopCD
-			#EjectCD
+			DriveCD.sh --eject
 			line="";;
 		MENU)
 			#PlayPauseCD
@@ -260,8 +260,6 @@ while true; do
 			elif [ -f $MPDMD ]; then
 				rm $MPDMD
 				touch $PHMD
-
-
 				log "set source phono"
 			else
 				mkdir $DIRPL
