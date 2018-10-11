@@ -51,4 +51,7 @@ fi
 if [ ${#string} == 5 ]; then
 	echo "~#"$CMD"= "$2"dummydummydummy" > /dev/ttyO4; exit 0
 fi
+if [ ${#string} == 6 ]; then
 	echo "~#"$CMD"="$2"dummydummydummy" > /dev/ttyO4; exit 0
+fi
+exit 1

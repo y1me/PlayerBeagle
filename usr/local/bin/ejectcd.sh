@@ -8,6 +8,7 @@ else
 	eject
 	WriteInfo.sh -s "open"
 	rm /ramtmp/CDTrayClose
+	rm /ramtmp/toc
         echo "0" > /ramtmp/Tracks
         echo "0" > /ramtmp/Ttracks
 fi

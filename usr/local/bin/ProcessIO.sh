@@ -27,19 +27,12 @@ log()
 # Eject CD
 EjectCD()
 {
-	if [ -f $CDMD ]; then
-		ejectcd.sh
-		if [ -f $CDTRCL ]; then
-			rm $CDPLAY
-			rm $CDPAUSE
-			#sleep 3
-			checkcd.sh
-		fi
-		if [ -f $TOC ]; then
-			ParseTOC.py -b > $TTR
-			echo "1" > $CTR
-		fi
-	fi
+    if [ -f $CDMD ]; then
+        DriveCD.sh --eject
+        if [ -f $INFO ]; then
+            rm $INFO
+        fi
+    fi
 }
 
 # Stop CD
@@ -218,7 +211,7 @@ while true; do
 	case "$line" in
 		POWER)
 			#StopCD
-			DriveCD.sh --eject
+                        EjectCD
 			line="";;
 		MENU)
 			#PlayPauseCD
