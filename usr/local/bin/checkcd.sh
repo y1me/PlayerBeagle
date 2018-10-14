@@ -35,11 +35,14 @@ RET=$?
 	fi
 
 	if [ $RET -eq 30 ]; then
+		if [ ! -e /ramtmp/toc ]; then
+			touch /ramtmp/toc
+		fi
 		log  "disc ok"
 		export HOME=/root/
 		cdtoc.exp  > /dev/null 2>&1
 		log  "Retrieve TOC disc"
-		cdcd tracks  > /ramtmp/toc
+		cdcd tracks  > /ramtmp/toc2
 		log  "Copy TOC on /ramtmp/toc"
                 #WriteInfo.sh -l "$(ParseTOC.py -a) $(ParseTOC.py -n)"
 		STATUS=0;

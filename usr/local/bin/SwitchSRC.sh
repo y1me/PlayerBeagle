@@ -20,14 +20,14 @@ elif [ -f /etc/cdplayer/analog ]; then
 	WriteInfo.sh -s "anlg"
 elif [ -f /etc/cdplayer/cdplayer ]; then
 	WriteInfo.sh -s "cd"
-        LockCmd ON
+        LockCmd.sh ON
         log "lock command input"
         ResetAudio.sh
         log "Hardware reset done"
         sleep 3
         DriveCD.sh -l
         log "load and check cd"
-        LockCmd OFF
+        LockCmd.sh OFF
         log "unlock command input"
         PCM1792AMute.sh OFF
 	DaemonDsplCD.sh &
