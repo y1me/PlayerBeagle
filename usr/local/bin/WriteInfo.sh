@@ -20,7 +20,7 @@ case $1 in
             touch $INFO
         fi
         DATA="$(tr [A-Z] [a-z] <<< "$2")"
-	echo "~#"$CMD"="$DATA"~#" > /dev/ttyO4; exit 0
+	echo "~#"$CMD"="   $DATA   "~#" > /dev/ttyO4; exit 0
         ;;
     -r|--transient)
         CMD='D'

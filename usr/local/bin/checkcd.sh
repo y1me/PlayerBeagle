@@ -1,5 +1,6 @@
 #!/bin/bash
-
+CDOK="/ramtmp/discok"
+TOC="/ramtmp/toc"
 log()
 {
 	logger -t ProcessIO $1
@@ -14,8 +15,8 @@ RET=$?
 	if [ $RET -eq 10 ]; then
 		log  "No disc"
 		WriteInfo.sh -r "nodisc"
-		if [ -e /ramtmp/toc ]; then
-			rm /ramtmp/toc
+		if [ -e $TOC ]; then
+			rm $TOC
 		fi
 		STATUS=0;
 	fi
@@ -26,6 +27,9 @@ RET=$?
 
 	if [ $RET -eq 20 ]; then
 		log  "Tray open"
+		if [ -e $TOC ]; then
+			rm $TOC
+		fi
 		WriteInfo.sh -r "open"
 	fi
 
@@ -35,14 +39,14 @@ RET=$?
 	fi
 
 	if [ $RET -eq 30 ]; then
-		if [ ! -e /ramtmp/toc ]; then
-			touch /ramtmp/toc
+		if [ ! -e $TOC ]; then
+			touch $TOC
 		fi
 		log  "disc ok"
 		export HOME=/root/
 		cdtoc.exp  > /dev/null 2>&1
 		log  "Retrieve TOC disc"
-		cdcd tracks  > /ramtmp/toc2
+		cdcd tracks  > $TOC
 		log  "Copy TOC on /ramtmp/toc"
                 #WriteInfo.sh -l "$(ParseTOC.py -a) $(ParseTOC.py -n)"
 		STATUS=0;
