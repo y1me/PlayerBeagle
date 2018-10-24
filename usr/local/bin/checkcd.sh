@@ -46,7 +46,8 @@ RET=$?
 		export HOME=/root/
 		cdtoc.exp  > /dev/null 2>&1
 		log  "Retrieve TOC disc"
-		cdcd tracks  > $TOC
+                sleep 1
+		cdcd tracks  > /tmp/toc # $TOC
 		log  "Copy TOC on /ramtmp/toc"
                 #WriteInfo.sh -l "$(ParseTOC.py -a) $(ParseTOC.py -n)"
 		STATUS=0;

@@ -30,8 +30,8 @@ elif [ -f /etc/cdplayer/cdplayer ]; then
         LockCmd.sh OFF
         log "unlock command input"
         PCM1792AMute.sh OFF
-	DaemonDsplCD.sh &
+#	DaemonDsplCD.sh &
 elif [ -f /etc/cdplayer/mpd ]; then
 	WriteInfo.sh -s "mpd"
-	pkill DaemonDsplCD.sh &
+#	pkill DaemonDsplCD.sh &
 fi
