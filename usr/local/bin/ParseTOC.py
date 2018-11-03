@@ -51,11 +51,8 @@ def AlbumTitle():
 	result=""
 	with open(TOC,'r') as f:
 		for line in f:
-			if line.partition(':')[0].strip() == "Album name":
-				#print "this is line {:03d}".format(i)
-				#print line.partition(':')[0]
-				#print line.partition('[')[-1].rpartition(']')[0]
-				return line.partition(':')[2].strip()
+			if line.partition('=')[0].strip() == "DTITLE":
+				return line.partition('=')[2].partition('/')[2].strip()
 			i+=1
 		return result
 
@@ -66,45 +63,29 @@ def Artist():
 	result=""
 	with open(TOC,'r') as f:
 		for line in f:
-			if line.partition(':')[0].strip() == "Album artist":
+			if line.partition('=')[0].strip() == "DTITLE":
 				#print "this is line {:03d}".format(i)
-				#print line.partition(':')[0]
+				#print line.partition('=')[0]
+				#print line.partition('=')[1]
+				#print line.partition('=')[2]
 				#print line.partition('[')[-1].rpartition(']')[0]
-				return line.partition(':')[2].strip()
+				return line.partition('=')[2].partition('/')[0].strip()
 			i+=1
 		return result
 
 def TotalTracks():
 	"""find and return a Total tracks
 	"""
-	i=1
-	result=""
 	with open(TOC,'r') as f:
-		for line in f:
-			if line.partition(':')[0].strip() == "Total tracks":
-				#print "this is line {:03d}".format(i)
-				#print line.partition(':')[0]
-				#print line.partition('[')[-1].rpartition(']')[0]
-				result=line.partition(':')[2]
-				return result.partition("Disc length")[0].strip()
-			i+=1
-		return result
+            line = f.readline().strip()
+            return line.split()[1]
 
 def DiscLength():
-	"""find and return a disc lendgth
+	"""find and return a disc length
 	"""
-	i=1
-	result=""
 	with open(TOC,'r') as f:
-		for line in f:
-			if line.partition(':')[0].strip() == "Total tracks":
-				#print "this is line {:03d}".format(i)
-				#print line.partition(':')[0]
-				#print line.partition('[')[-1].rpartition(']')[0]
-				result=line.partition(':')[2]
-				return result.partition("Disc length:")[2].strip()
-			i+=1
-		return result
+            line = f.readline().strip()
+            return line.split()[-1]
 
 parser = argparse.ArgumentParser(description='Return cd toc info')
 parser.add_argument("-t","--tracktitle",
@@ -144,7 +125,6 @@ if args.disclength:
 	print DiscLength()
 if args.disctotal:
 	total=TotalTracks()+DiscLength()
-	total=total.replace(":","")
 	print total
 if args.toctoseconds:
 	total=FormatTocABS()
