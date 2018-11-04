@@ -31,47 +31,33 @@ def FormatTocABS():
 def TrackTitle(number):
 	"""find and return a track title
 	"""
-	i=1
 	result=""
+        if number > TotalTracks():
+            exit(1)
 	with open(TOC,'r') as f:
 		for line in f:
-			if line.partition(':')[0].strip() == number:
-				#print "this is line {:03d}".format(i)
-				#print line.partition(':')[0]
-				#print line.partition('[')[-1].rpartition(']')[0]
-				return line.partition(']')[-1].strip()
-			i+=1
-		return result
+                    if line.partition('=')[0].strip() == ("TTITLE" + str(int(number) -1)):
+                        return line.partition('=')[-1].strip()
+		exit(1)
 
 
 def AlbumTitle():
 	"""find and return a Album title
 	"""
-	i=1
-	result=""
 	with open(TOC,'r') as f:
 		for line in f:
 			if line.partition('=')[0].strip() == "DTITLE":
 				return line.partition('=')[2].partition('/')[2].strip()
-			i+=1
-		return result
+		exit(1)
 
 def Artist():
 	"""find and return a Artist
 	"""
-	i=1
-	result=""
 	with open(TOC,'r') as f:
 		for line in f:
 			if line.partition('=')[0].strip() == "DTITLE":
-				#print "this is line {:03d}".format(i)
-				#print line.partition('=')[0]
-				#print line.partition('=')[1]
-				#print line.partition('=')[2]
-				#print line.partition('[')[-1].rpartition(']')[0]
 				return line.partition('=')[2].partition('/')[0].strip()
-			i+=1
-		return result
+            exit(1)	
 
 def TotalTracks():
 	"""find and return a Total tracks
