@@ -57,7 +57,7 @@ def Artist():
 		for line in f:
 			if line.partition('=')[0].strip() == "DTITLE":
 				return line.partition('=')[2].partition('/')[0].strip()
-            exit(1)	
+                exit(1)	
 
 def TotalTracks():
 	"""find and return a Total tracks

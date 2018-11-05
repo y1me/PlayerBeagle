@@ -43,13 +43,11 @@ RET=$?
 			touch $TOC
 		fi
 		log  "disc ok"
-		export HOME=/root/
-		cdtoc.exp  > /dev/null 2>&1
 		log  "Retrieve TOC disc"
                 sleep 1
-		cdcd tracks  > /tmp/toc # $TOC
+		GetCDdata.sh
 		log  "Copy TOC on /ramtmp/toc"
-                #WriteInfo.sh -l "$(ParseTOC.py -a) $(ParseTOC.py -n)"
+                WriteInfo.sh -l "$(ParseTOC.py -a) $(ParseTOC.py -n)"
 		STATUS=0;
 	fi
 

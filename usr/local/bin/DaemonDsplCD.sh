@@ -7,15 +7,15 @@ TOC="/ramtmp/toc"
 INFO="/ramtmp/inforunning"
 COUNT=0
 
-if [ -f $TOC ]; then
+if [ -f $TOC ] && [ -s $TOC ]; then
     WriteInfo.sh -l "$(ParseTOC.py -a) $(ParseTOC.py -n)"
 fi
 while true; do
     if [ ! -f $CDPLAY ] || [ ! -f $CDPAUSE ]; then
-        if [ ! -f $INFO ] && [ -f $TOC ]; then
+        if [ ! -f $INFO ] && [ -f $TOC ] && [ -s $TOC ]; then
             WriteInfo.sh -t $(ParseTOC.py -c)
             COUNT=$[$COUNT+1]
-            if [ $COUNT -ge 50 ]; then
+            if [ $COUNT -ge 50 ] && [ -s $TOC ]; then
                 WriteInfo.sh -l "$(ParseTOC.py -a) $(ParseTOC.py -n)"
                 COUNT=1
             fi
