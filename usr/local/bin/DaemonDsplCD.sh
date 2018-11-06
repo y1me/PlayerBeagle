@@ -13,7 +13,8 @@ fi
 while true; do
     if [ ! -f $CDPLAY ] || [ ! -f $CDPAUSE ]; then
         if [ ! -f $INFO ] && [ -f $TOC ] && [ -s $TOC ]; then
-            WriteInfo.sh -t $(ParseTOC.py -c)
+            A=`echo "($(ParseTOC.py -l)/60)*100 + $(ParseTOC.py -l)%60" | bc`
+            WriteInfo.sh -t $(ParseTOC.py -b)$A
             COUNT=$[$COUNT+1]
             if [ $COUNT -ge 50 ] && [ -s $TOC ]; then
                 WriteInfo.sh -l "$(ParseTOC.py -a) $(ParseTOC.py -n)"

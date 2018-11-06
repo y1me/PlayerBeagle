@@ -5,8 +5,8 @@ TOC="/ramtmp/toc"
 TOCABS="/ramtmp/tocabsolute"
 
 
-def FormatTocABS():
-	"""convert tracks duration in seconds
+def TrackInfo(number):
+	"""find and return a track duration and title
 	"""
 	i=1
 	result=""
@@ -16,15 +16,8 @@ def FormatTocABS():
 		for line in f:
 			if line.count("[") == 1:
 				length=line[line.find("[")+1:line.find("]")]
-				#print length
-				#print length.partition(':')[0]
-				#print length.partition(':')[1]
-				#print length.partition(':')[2]
 				tr=float( length.partition(':')[0] ) * 60.00 + float( length.partition(':')[2] )
-				#print tr
 				seconds = seconds + tr
-				#print round(seconds,1) 
-				#print seconds
 				fout.write(str(round(seconds,1)) + "\n") 
 	fout.close()
 
@@ -64,6 +57,8 @@ def TotalTracks():
 	"""
 	with open(TOC,'r') as f:
             line = f.readline().strip()
+            if len(line.split()[1]) < 2:
+                return "0" + line.split()[1]
             return line.split()[1]
 
 def DiscLength():
@@ -89,14 +84,16 @@ parser.add_argument("-b","--totaltracks",
                     help="return number of tracks" ,
 		    action="store_true")
 parser.add_argument("-l","--disclength",
-                    help="return disc length" ,
+                    help="return disc length (seconds)" ,
 		    action="store_true")
 parser.add_argument("-c","--disctotal",
-                    help="return total tracks and disc length" ,
+                    help="return total tracks and disc length (seconds)" ,
 		    action="store_true")
-parser.add_argument("-d","--toctoseconds",
-                    help="format toc to seek tracks" ,
-		    action="store_true")
+parser.add_argument("-d","--trackinfo",
+                    dest='TrackInfo',
+                    default="",
+                    type=str,
+                    help="return track info" )
                     
 args = parser.parse_args()
 if args.TrackNumber:
@@ -112,5 +109,5 @@ if args.disclength:
 if args.disctotal:
 	total=TotalTracks()+DiscLength()
 	print total
-if args.toctoseconds:
+if args.TrackInfo:
 	total=FormatTocABS()
