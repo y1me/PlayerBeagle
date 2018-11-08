@@ -8,7 +8,17 @@ TOCABS="/ramtmp/tocabsolute"
 def TrackInfo(number):
 	"""find and return a track duration and title
 	"""
-	i=1
+	with open(TOC,'r') as f:
+            line = f.readline().strip()
+            if int(line.split()[1]) < int(number) :
+                return "error"
+            info=[]
+            info.append(line.split()[int(number)+1])
+            info.append(line.split()[int(number)+2])
+            if int(line.split()[1]) == int(number) :
+                info[1] = str(int(DiscLength()) * 75)
+            return info[0] + " " + info[1] 
+        i=1
 	result=""
 	seconds=0.00
 	fout=open(TOCABS,'w')
@@ -25,7 +35,7 @@ def TrackTitle(number):
 	"""find and return a track title
 	"""
 	result=""
-        if number > TotalTracks():
+        if int(number) > int(TotalTracks()):
             exit(1)
 	with open(TOC,'r') as f:
 		for line in f:
@@ -90,7 +100,7 @@ parser.add_argument("-c","--disctotal",
                     help="return total tracks and disc length (seconds)" ,
 		    action="store_true")
 parser.add_argument("-d","--trackinfo",
-                    dest='TrackInfo',
+                    dest='Tracknumber',
                     default="",
                     type=str,
                     help="return track info" )
@@ -109,5 +119,5 @@ if args.disclength:
 if args.disctotal:
 	total=TotalTracks()+DiscLength()
 	print total
-if args.TrackInfo:
-	total=FormatTocABS()
+if args.Tracknumber:
+	print TrackInfo(args.Tracknumber) + " \"" + TrackTitle(args.Tracknumber) + "\""
