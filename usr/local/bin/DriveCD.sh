@@ -12,13 +12,7 @@ CDPAUSE="/ramtmp/CDisPausing"
 for i in "$@"
 do
     case $i in
-        -l|--loadcd)
-            eject -t && checkcd.sh 
-            touch $CDTRCL 
-            touch $TR
-            touch $CTR 
-            echo "0" > $TR
-            echo "0" > $TTR
+        -l|--free)
             shift # past argument=value
             ;;
         -e|--eject)
@@ -30,7 +24,7 @@ do
                 checkcd.sh
             fi
             if [ -f $TOC ]; then
-                ParseTOC.py -b > $TTR
+                ParseTOC.py -b | bc > $TTR
                 echo "1" > $CTR
             fi
             shift # past argument=value
