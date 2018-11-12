@@ -230,35 +230,6 @@ while true; do
 			echo $line
 			line="";;
 		RGBVIDEO)
-			if [ -f $PHMD ]; then
-				rm $PHMD
-				touch $SP1MD
-				log "set source spdif1"
-			elif [ -f $SP1MD ]; then
-				rm $SP1MD
-				touch $SP2MD
-				log "set source spdif2"
-			elif [ -f $SP2MD ]; then
-				rm $SP2MD
-				touch $ANGMD
-				log "set source analog"
-			elif [ -f $ANGMD ]; then
-				rm $ANGMD
-				touch $CDMD
-				log "set source cdplayer"
-			elif [ -f $CDMD ]; then
-				rm $CDMD
-				touch $MPDMD
-				log "set source mpd"
-			elif [ -f $MPDMD ]; then
-				rm $MPDMD
-				touch $PHMD
-				log "set source phono"
-			else
-				mkdir $DIRPL
-				touch $CDMD
-				log "set source cdplayer"
-			fi
 			SwitchSRC.sh
 			line="";;
 		MUTE)
