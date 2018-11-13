@@ -35,170 +35,11 @@ EjectCD()
     fi
 }
 
-# Stop CD
-StopCD()
-{
-	if [ -f $CDMD ]; then
-		if [ -f $CDPLAY ]; then
-			pkill mplayer
-			rm $CDPLAY
-		fi
-		if [ -f $CDPAUSE ]; then
-			rm $CDPAUSE
-		fi
-		WriteInfo.sh -r stop
-	fi
 
-}
 
-# Next Tracks CD
-NextTracksCD()
-{
-	if [ -f $CDMD ]; then
-		if [ -f $CDPLAY ]; then
-			echo "seek_chapter 1 0" > $CDCTRL
-		fi
-	fi
 
-}
 
-# Previous Tracks CD
-PrevTracksCD()
-{
-	if [ -f $CDMD ]; then
-		if [ -f $CDPLAY ]; then
-			echo "seek_chapter -1 0" > $CDCTRL
-		fi
-	fi
-
-}
-
-# Play/Pause CD
-PlayPauseCD()
-{
-	if [ -f $CDMD ]; then
-		if [ ! -f $CDTRCL ]; then
-			ejectcd.sh
-			#sleep 3
-			checkcd.sh
-		
-			if [ -f $TOC ]; then
-				ParseTOC.py -b > $TTR				
-				echo "1" > $CTR
-			fi
-		fi
-	fi
-	if [ ! -e $CDCTRL ] ; then
-		mkfifo $CDCTRL
-	fi
-	if [ ! -f $CDPLAY ]; then
-		if aplay -l | grep "OutPlayer" | grep "card 0" &>/dev/null; then
-			mplayer -slave  --cdrom-device=/dev/cdrom --cdda=paranoia=2 cdda://$(cat $CTR)-$(cat $TTR) -ao alsa:device=hw=0.0  -input file=$CDCTRL -idle &>/ramtmp/mplayer.log 2>/ramtmp/mplayer-err.log -cache 1000 &
-		else
-			mplayer -slave  --cdrom-device=/dev/cdrom --cdda=paranoia=2 cdda://$(cat $CTR)-$(cat $TTR) -ao alsa:device=hw=1.0  -input file=$CDCTRL -idle &>/ramtmp/mplayer.log 2>/ramtmp/mplayer-err.log -cache 1000 &
-		fi
-		touch $CDPLAY
-		WriteInfo.sh -s play
-	else
-		if [ ! -f $CDPAUSE ]; then
-			touch $CDPAUSE
-			echo "pause" > $CDCTRL
-			WriteInfo.sh -s pause
-		else
-			rm $CDPAUSE
-			echo "pause" > $CDCTRL
-			WriteInfo.sh -s play
-		fi
-			
-	fi
-		
-}
-
-VOLUPManage()
-{
-    if [ ! -f $VOLCF ]; then
-        mkdir $DIRPL
-        touch $VOLCF
-        echo "195" >> $VOLCF
-    fi
-    if [ -f $MUTE ]; then
-        rm $MUTE 
-        log "mute off"
-        PCM1792AMute.sh OFF
-    fi
-    read -r vol < $VOLCF
-    if  [ $vol -lt 255 ]; then
-        vol=$(($vol +2))
-        echo $vol > $VOLCF
-        PCM1792AVolume.sh $vol >> /dev/null
-        log "Volume send $vol"
-        WriteInfo.sh -r $((($vol-255)/2))"db"
-    else
-        log "Volume max"
-        WriteInfo.sh -r "0db"
-
-    fi
-}
-
-VOLDWManage()
-{
-    if [ ! -f $VOLCF ]; then
-        mkdir $DIRPL
-        touch $VOLCF
-        echo "195" >> $VOLCF
-    fi
-    if [ -f $MUTE ]; then
-        rm $MUTE 
-        log "mute off"
-        PCM1792AMute.sh OFF
-    fi
-    read -r vol < $VOLCF
-    if  [ $vol -gt 0 ]; then
-        vol=$(($vol -2))
-        echo $vol > $VOLCF
-        PCM1792AVolume.sh $vol >> /dev/null
-        log "Volume send $vol"
-        WriteInfo.sh -r $((($vol-255)/2))"db"
-    else
-        log "Volume min"
-        WriteInfo.sh -r "-128db"
-    fi
-}
-
-MUTEManage()
-{
-    if [ ! -f $MUTE ]; then
-        touch $MUTE 
-        log "mute on"
-        PCM1792AMute.sh ON
-        WriteInfo.sh -r "mute"
-    else
-        rm $MUTE 
-        log "mute off"
-        PCM1792AMute.sh OFF
-        WriteInfo.sh -r "sound"
-    fi
-
-}
-
-VolumeInit()
-{
-    if [ ! -f $VOLCF ]; then
-        mkdir $DIRPL
-        touch $VOLCF
-        echo "195" >> $VOLCF
-    fi
-    if [ -f $MUTE ]; then
-        rm $MUTE 
-        log "mute off"
-    fi
-    PCM1792AMute.sh OFF
-    read -r vol < $VOLCF
-    PCM1792AVolume.sh $vol >> /dev/null
-    log "Volume send $vol"
-}
-
-VolumeInit
+VolCtrl.sh --init
 sleep 10
 SwitchSRC.sh
 while true; do
@@ -233,13 +74,15 @@ while true; do
 			SwitchSRC.sh
 			line="";;
 		MUTE)
-                    MUTEManage
+                    VolCtrl.sh --mute
 			line="";;
 		VOLUP)
                     VOLUPManage
+                    VolCtrl.sh --up
 			line="";;
 		VOLDW)
                     VOLDWManage
+                    VolCtrl.sh --down
 			line="";;
 		ENDINFO)
                     if [ -f $INFO ]; then
