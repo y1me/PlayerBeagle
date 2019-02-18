@@ -1,15 +1,16 @@
 #!/bin/bash
 LOCK="/ramtmp/LockIHM"
 CMDIHM="/ramtmp/CommandIHM"
+UART="/dev/ttyS1"
 
 if [ ! -d "/ramtmp" ]; then 
     mkdir /ramtmp
 fi
 
 mount -t tmpfs -o size=10m tmpfs /ramtmp
-stty -F /dev/ttyO4 115200 cs8
+stty -F $UART 115200 cs8
 touch $CMDIHM
-while read -r line < /dev/ttyO4; do
+while read -r line < $UART; do
     if [ ! -f $LOCK ]; then 
         echo $line >> $CMDIHM
     else

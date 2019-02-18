@@ -2,6 +2,7 @@
 
 string=$2
 INFO="/ramtmp/inforunning"
+UART="/dev/ttyS1"
 
 case $1 in
     -t|--time)
@@ -20,7 +21,7 @@ case $1 in
             touch $INFO
         fi
         DATA="$(tr [A-Z] [a-z] <<< "$2")"
-	echo "~#"$CMD"="   $DATA   "~#" > /dev/ttyO4; exit 0
+	echo "~#"$CMD"="   $DATA   "~#" > $UART; exit 0
         ;;
     -r|--transient)
         CMD='D'
@@ -37,21 +38,21 @@ esac
 
 
 if [ ${#string} == 1 ]; then
-	echo "~#"$CMD"=     "$2"dummydummydummy" > /dev/ttyO4; exit 0
+	echo "~#"$CMD"=     "$2"dummydummydummy" > $UART; exit 0
 fi
 if [ ${#string} == 2 ]; then 
-	echo "~#"$CMD"=    "$2"dummydummydummy" > /dev/ttyO4; exit 0
+	echo "~#"$CMD"=    "$2"dummydummydummy" > $UART; exit 0
 fi
 if [ ${#string} == 3 ]; then
-	echo "~#"$CMD"=   "$2"dummydummydummy" > /dev/ttyO4; exit 0
+	echo "~#"$CMD"=   "$2"dummydummydummy" > $UART; exit 0
 fi
 if [ ${#string} == 4 ]; then
-	echo "~#"$CMD"=  "$2"dummydummydummy" > /dev/ttyO4; exit 0
+	echo "~#"$CMD"=  "$2"dummydummydummy" > $UART; exit 0
 fi
 if [ ${#string} == 5 ]; then
-	echo "~#"$CMD"= "$2"dummydummydummy" > /dev/ttyO4; exit 0
+	echo "~#"$CMD"= "$2"dummydummydummy" > $UART; exit 0
 fi
 if [ ${#string} == 6 ]; then
-	echo "~#"$CMD"="$2"dummydummydummy" > /dev/ttyO4; exit 0
+	echo "~#"$CMD"="$2"dummydummydummy" > $UART; exit 0
 fi
 exit 1

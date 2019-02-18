@@ -13,7 +13,6 @@ else
 fi
 
 cp -r ./usr /
-cp -r ./lib /
 cp -r ./etc /
 
 echo "Copy done!"
