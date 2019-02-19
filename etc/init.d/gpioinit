@@ -20,26 +20,19 @@ log()
 case $1 in
   start)
         mkdir /gpio
-        if [ ! -d "/sys/class/gpio/gpio60" ]; then 
-            echo 60 > /sys/class/gpio/export 
+        if [ ! -d "/sys/class/gpio/gpio68" ]; then 
+            echo 68 > /sys/class/gpio/export 
         fi
-        if [ ! -d "/sys/class/gpio/gpio48" ]; then 
-            echo 48 > /sys/class/gpio/export 
-        fi
-	ln -s /sys/class/gpio/gpio60 /gpio/UsbPW
-	ln -s /sys/class/gpio/gpio48 /gpio/AudioOutPW
+	ln -s /sys/class/gpio/gpio68 /gpio/UsbPW
 	log "Create gpio link"	
         echo out > /gpio/UsbPW/direction
-        echo out > /gpio/AudioOutPW/direction
         echo 1 > /gpio/UsbPW/value
-        echo 1 > /gpio/AudioOutPW/value
 	log "config gpio out,high"	
  
   ;;
 
   stop)
-        echo in > /gpio/AudioUsbPW/direction
-        echo 0 > /gpio/AudioUsbPW/value
+        echo 0 > /gpio/UsbPW/value
 	log "config gpio in,low"	
   	rm -r /gpio
 	log "remove gpio link"	
@@ -48,7 +41,7 @@ case $1 in
 
   restart|force-reload)
         $0 stop
-	sleep 1
+	sleep 2
 	$0 start
   ;;
 
