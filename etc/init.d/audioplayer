@@ -31,8 +31,6 @@ StartIHM()
 
 case $1 in
   start)
-	AudioEN.sh
-	log "Power USB Device"
         InitDac.sh
 	StartIHM
 	log "Start IHM input"

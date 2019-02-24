@@ -13,7 +13,7 @@ if [ -f /etc/cdplayer/phono ]; then
 elif [ -f /etc/cdplayer/spdif1 ]; then
 	WriteInfo.sh -s "spdif1"
         PCM1792AMute.sh ON
-        pkill DaemonPhono.sh
+        KillPhono.sh
 elif [ -f /etc/cdplayer/spdif2 ]; then
 	WriteInfo.sh -s "spdif2"
 elif [ -f /etc/cdplayer/analog ]; then
@@ -22,7 +22,7 @@ elif [ -f /etc/cdplayer/cdplayer ]; then
 	WriteInfo.sh -s "cd"
         LockCmd.sh ON
         log "lock command input"
-        ResetAudio.sh
+        #ResetAudio.sh
         log "Hardware reset done"
         sleep 3
         DriveCD.sh -l
