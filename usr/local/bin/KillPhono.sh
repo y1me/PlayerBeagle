@@ -1,10 +1,6 @@
 #!/bin/bash
 
-pkill DaemonPhono.sh
+pkill -9 DaemonPhono.sh
 
-AudioDIS.sh
-sleep 1
-AudioEN.sh
-
-#pkill arecord
-#pkill aplay
+pkill -9 arecord
+pkill -9 aplay

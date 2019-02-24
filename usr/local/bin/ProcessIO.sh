@@ -199,7 +199,7 @@ VolumeInit()
 }
 
 VolumeInit
-sleep 10
+sleep 2
 SwitchSRC.sh
 while true; do
 

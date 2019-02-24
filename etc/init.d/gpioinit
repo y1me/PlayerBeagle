@@ -21,9 +21,9 @@ case $1 in
   start)
         mkdir /gpio
         if [ ! -d "/sys/class/gpio/gpio68" ]; then 
-            echo 68 > /sys/class/gpio/export 
+            echo 1 > /sys/class/gpio/export 
         fi
-	ln -s /sys/class/gpio/gpio68 /gpio/UsbPW
+	ln -s /sys/class/gpio/gpio1 /gpio/UsbPW
 	log "Create gpio link"	
         echo out > /gpio/UsbPW/direction
         echo 1 > /gpio/UsbPW/value

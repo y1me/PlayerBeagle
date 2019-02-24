@@ -6,13 +6,12 @@ log()
 	logger -t AudioService $1
 }
 
-pkill ReadIHM.sh
-pkill ProcessIO.sh
+pkill -9 ReadIHM.sh
+pkill -9 ProcessIO.sh
 
-AudioDIS.sh
-sleep 1
-AudioEN.sh
+pkill -9 DaemonDsplCD.sh
+pkill -9 DaemonPhono.sh
 
-#pkill arecord
-#pkill aplay
+pkill -9 arecord
+pkill -9 aplay
 log "Kill cd player service"

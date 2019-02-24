@@ -14,5 +14,6 @@ fi
 
 cp -r ./usr /
 cp -r ./etc /
+cp -r ./boot /
 
 echo "Copy done!"
