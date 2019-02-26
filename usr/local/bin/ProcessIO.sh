@@ -92,11 +92,7 @@ PlayPauseCD()
 		mkfifo $CDCTRL
 	fi
 	if [ ! -f $CDPLAY ]; then
-		if aplay -l | grep "OutPlayer" | grep "card 0" &>/dev/null; then
-			mplayer -slave  --cdrom-device=/dev/cdrom --cdda=paranoia=2 cdda://$(cat $CTR)-$(cat $TTR) -ao alsa:device=hw=0.0  -input file=$CDCTRL -idle &>/ramtmp/mplayer.log 2>/ramtmp/mplayer-err.log -cache 1000 &
-		else
-			mplayer -slave  --cdrom-device=/dev/cdrom --cdda=paranoia=2 cdda://$(cat $CTR)-$(cat $TTR) -ao alsa:device=hw=1.0  -input file=$CDCTRL -idle &>/ramtmp/mplayer.log 2>/ramtmp/mplayer-err.log -cache 1000 &
-		fi
+                mplayer cdda://$(cat $CTR)-$(cat $TTR) -input file=$CDCTRL -idle &>/ramtmp/mplayer.log 2>/ramtmp/mplayer-err.log -cache 1000 &
 		touch $CDPLAY
 		WriteInfo.sh -s play
 	else
@@ -214,13 +210,13 @@ while true; do
                         EjectCD
 			line="";;
 		MENU)
-			#PlayPauseCD
+			PlayPauseCD
 			line="";;
 		RIGHT)
-			#NextTracksCD
+			NextTracksCD
 			line="";;
 		LEFT)
-			#PrevTracksCD
+			PrevTracksCD
 			line="";;
 		DOWN)
 			#StopCD
