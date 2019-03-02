@@ -49,20 +49,15 @@ StopCD()
 
 PlayPauseCD()
 {
-    echo "I'm here 0"
     if [ ! -f $CDTRCL ]; then
         LoadCD
-        echo "I'm here 1"
         if [ ! -f $TOC ]; then
             exit
         fi
     fi
-    echo "I'm here 2"
     if [ ! -e $CDCTRL ] ; then
         mkfifo $CDCTRL
     fi
-    echo "I'm here 3"
-    sleep 2
     if [ ! -f $CDPLAY ]; then
         mplayer -nogui -nolirc -slave -quiet -cdrom-device /dev/cdrom -cdda paranoia=2 cdda://$(cat $CTR)-$(cat $TTR)  -input file=$CDCTRL -idle &>/ramtmp/mplayer.log 2>/ramtmp/mplayer-err.log -cache 1000 &
         touch $CDPLAY
