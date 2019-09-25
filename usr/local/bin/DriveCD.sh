@@ -135,22 +135,27 @@ PlayPauseCD()
     fi
     if [ ! -f $CDPLAY ]; then
         rm $CDDUMP* 
-        read -p "Press enter to continue"
+        pkill ReadCdStatus.sh
         pkill DumpCD.sh
         pkill cdparanoia
         DumpCD.sh 1 > /dev/null 2>&1 &
-        sleep 1
+        while [ ! -f $CDDUMP"track01.cdda.wav" ]; do
+            sleep 1
+        done
         while [ $(stat -c%s $CDDUMP"track01.cdda.wav") -lt 300 ]; do
             sleep 1
         done
         pkill DumpCD.sh
         pkill cdparanoia
         DumpCD.sh $(cat $TR) > /dev/null 2>&1 &
+        while [ ! -f $($CDDUMP$( $CDDUMP | grep $(cat $TR))) ]; do
+            sleep 1
+        done
         while [ $(stat -c%s $CDDUMP$(ls $CDDUMP | grep $(cat $TR))) -lt 300 ]; do
             sleep 1
         done
-        sleep 1
         pkill mplayer
+        sleep 1
         mplayer -nogui -nolirc -slave -quiet -input file=$CDCTRL -idle &>/ramtmp/mplayer.log 2>/ramtmp/mplayer-err.log &
         #mplayer -nogui -nolirc -slave -quiet -input file=$CDCTRL -idle &
         STARTTRACK=$(cat $TR)
@@ -160,6 +165,7 @@ PlayPauseCD()
             echo "loadfile "$CDDUMP"track"$i".cdda.wav 1" > $CDCTRL
         done
         echo "pt_step $STARTTRACK"  > $CDCTRL
+        ReadCdStatus.sh &
         touch $CDPLAY
     else
         if [ ! -f $CDPAUSE ]; then
@@ -204,6 +210,8 @@ do
             shift # past argument=value
             ;;
 
+        -s|--stop)
+            StopCD
             shift # past argument=value
             ;;
         -p|--play)
