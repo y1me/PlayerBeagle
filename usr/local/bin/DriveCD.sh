@@ -9,6 +9,7 @@ TR="/ramtmp/Tracks"
 CTR="/ramtmp/Ctracks"
 CDPLAY="/ramtmp/CDisPlaying"
 CDPAUSE="/ramtmp/CDisPausing"
+CDDUMP="/cdtmp/"
 
 NextTracksCD()
 {
@@ -59,7 +60,15 @@ PlayPauseCD()
         mkfifo $CDCTRL
     fi
     if [ ! -f $CDPLAY ]; then
-        mplayer -nogui -nolirc -slave -quiet -cdrom-device /dev/cdrom -cdda paranoia=2 cdda://$(cat $CTR)-$(cat $TTR)  -input file=$CDCTRL -idle &>/ramtmp/mplayer.log 2>/ramtmp/mplayer-err.log -cache 1000 &
+        DumpCD.sh $(cat $TR) > /dev/null 2>&1 &
+        mplayer -nogui -nolirc -slave -quiet -input file=$CDCTRL -idle &>/ramtmp/mplayer.log 2>/ramtmp/mplayer-err.log &
+        CurrentTrack=$(wc -m $TR | cut -d " " -f1)
+        if [ $CurrentTrack -eq 2 ]; then
+            echo "loadfile "$CDDUMP"track0"$CurrentTrack".cdda.wav" > $CDCTRL
+        fi
+        if [ $CurrentTrack -eq 3 ]; then
+            echo "loadfile "$CDDUMP"track"$CurrentTrack".cdda.wav" > $CDCTRL
+        fi
         touch $CDPLAY
     else
         if [ ! -f $CDPAUSE ]; then
