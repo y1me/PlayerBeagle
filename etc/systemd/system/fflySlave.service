@@ -1,0 +1,18 @@
+[Unit]
+Description=Handle BLE Communication for FFLY4U device(systemd service)
+
+[Service]
+EnvironmentFile=/etc/fflytest/fflytest.conf
+#ExecStartPre=/usr/local/sbin/touchctlfile
+ExecStartPre=/usr/local/sbin/bleLostConn.sh
+ExecStartPre=/usr/local/sbin/loadi2cmcp2221.sh
+ExecStart=/usr/local/sbin/launchSlave.sh
+ExecStop=/usr/local/sbin/rstusbhub 
+onFailure=/usr/local/sbin/rstusbhub 
+onFailure=/usr/local/sbin/bleLostConn.sh
+Restart=always
+RestartSec=2
+Type=Idle
+
+[Install]
+WantedBy=multi-user.target

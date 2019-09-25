@@ -1,0 +1,9 @@
+[Unit]
+Description=Gpio initialisation (systemd service)
+
+[Service]
+ExecStart=/usr/local/bin/GpioInit.sh
+Type=Idle
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,11 @@
+[Unit]
+Description=Handle IHM audio player input (systemd service)
+
+[Service]
+ExecStart=/usr/local/bin/ReadIHM.sh
+Restart=always
+RestartSec=5
+Type=Idle
+
+[Install]
+WantedBy=multi-user.target
