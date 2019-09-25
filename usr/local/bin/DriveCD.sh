@@ -64,9 +64,11 @@ PlayPauseCD()
         mplayer -nogui -nolirc -slave -quiet -input file=$CDCTRL -idle &>/ramtmp/mplayer.log 2>/ramtmp/mplayer-err.log &
         CurrentTrack=$(wc -m $TR | cut -d " " -f1)
         if [ $CurrentTrack -eq 2 ]; then
+            CurrentTrack=$(cat $TR)
             echo "loadfile "$CDDUMP"track0"$CurrentTrack".cdda.wav" > $CDCTRL
         fi
         if [ $CurrentTrack -eq 3 ]; then
+            CurrentTrack=$(cat $TR)
             echo "loadfile "$CDDUMP"track"$CurrentTrack".cdda.wav" > $CDCTRL
         fi
         touch $CDPLAY
