@@ -13,15 +13,89 @@ CDDUMP="/cdtmp/"
 
 NextTracksCD()
 {
-    if [ -f $CDPLAY ]; then
-        echo "seek_chapter 1 0" > $CDCTRL
+    CurrentTrack=$(wc -m $TR | cut -d " " -f1)
+    if [ $CurrentTrack -eq 2 ]; then
+        NextTrack=$(cat $TR)
+        ((NextTrack+=1))
+        if ls $CDDUMP"track0"$NextTrack".cdda.wav"; then
+            while [ $(stat -c%s $CDDUMP"track0"$NextTrack".cdda.wav") -lt 300 ]; do
+                sleep 1
+            done
+            echo echo "pt_step 1" > $CDCTRL
+        else
+            pkill DumpCD.sh
+            pkill cdparanoia
+            DumpCD.sh $NextTrack > /dev/null 2>&1 &
+            sleep 1
+            while [ $(stat -c%s $CDDUMP"track0"$NextTrack".cdda.wav") -lt 300 ]; do
+                sleep 1
+            done
+            echo echo "pt_step 1" > $CDCTRL
+
+        fi
+    fi
+    if [ $CurrentTrack -eq 3 ]; then
+        NextTrack=$(cat $TR)
+        ((NextTrack+=1))
+        if ls $CDDUMP"track"$NextTrack".cdda.wav"; then
+            while [ $(stat -c%s $CDDUMP"track"$NextTrack".cdda.wav") -lt 300 ]; do
+                sleep 1
+            done
+            echo echo "pt_step 1" > $CDCTRL
+        else
+            pkill DumpCD.sh
+            pkill cdparanoia
+            DumpCD.sh $NextTrack > /dev/null 2>&1 &
+            sleep 1
+            while [ $(stat -c%s $CDDUMP"track"$NextTrack".cdda.wav") -lt 300 ]; do
+                sleep 1
+            done
+            echo echo "pt_step 1" > $CDCTRL
+        fi
     fi
 }
 
 PrevTracksCD()
 {
-    if [ -f $CDPLAY ]; then
-        echo "seek_chapter -1 0" > $CDCTRL
+    CurrentTrack=$(wc -m $TR | cut -d " " -f1)
+    if [ $CurrentTrack -eq 2 ]; then
+        PrevTrack=$(cat $TR)
+        ((PrevTRACK-=1))
+        if ls $CDDUMP"track0"$PrevTrack".cdda.wav"; then
+            while [ $(stat -c%s $CDDUMP"track0"$PrevTrack".cdda.wav") -lt 300 ]; do
+                sleep 1
+            done
+            echo echo "pt_step 1" > $CDCTRL
+        else
+            pkill DumpCD.sh
+            pkill cdparanoia
+            DumpCD.sh $PrevTrack > /dev/null 2>&1 &
+            sleep 1
+            while [ $(stat -c%s $CDDUMP"track0"$PrevTrack".cdda.wav") -lt 300 ]; do
+                sleep 1
+            done
+            echo echo "pt_step 1" > $CDCTRL
+
+        fi
+    fi
+    if [ $CurrentTrack -eq 3 ]; then
+        PrevTrack=$(cat $TR)
+        ((PrevTRACK-=1))
+        if ls $CDDUMP"track"$PrevTrack".cdda.wav"; then
+            while [ $(stat -c%s $CDDUMP"track"$PrevTrack".cdda.wav") -lt 300 ]; do
+                sleep 1
+            done
+            echo echo "pt_step -1" > $CDCTRL
+        else
+            pkill DumpCD.sh
+            pkill cdparanoia
+            DumpCD.sh $PrevTrack > /dev/null 2>&1 &
+            sleep 1
+            while [ $(stat -c%s $CDDUMP"track"$PrevTrack".cdda.wav") -lt 300 ]; do
+                sleep 1
+            done
+            echo echo "pt_step -1" > $CDCTRL
+        fi
     fi
 }
 
@@ -60,17 +134,32 @@ PlayPauseCD()
         mkfifo $CDCTRL
     fi
     if [ ! -f $CDPLAY ]; then
+        rm $CDDUMP* 
+        read -p "Press enter to continue"
+        pkill DumpCD.sh
+        pkill cdparanoia
+        DumpCD.sh 1 > /dev/null 2>&1 &
+        sleep 1
+        while [ $(stat -c%s $CDDUMP"track01.cdda.wav") -lt 300 ]; do
+            sleep 1
+        done
+        pkill DumpCD.sh
+        pkill cdparanoia
         DumpCD.sh $(cat $TR) > /dev/null 2>&1 &
+        while [ $(stat -c%s $CDDUMP$(ls $CDDUMP | grep $(cat $TR))) -lt 300 ]; do
+            sleep 1
+        done
+        sleep 1
+        pkill mplayer
         mplayer -nogui -nolirc -slave -quiet -input file=$CDCTRL -idle &>/ramtmp/mplayer.log 2>/ramtmp/mplayer-err.log &
-        CurrentTrack=$(wc -m $TR | cut -d " " -f1)
-        if [ $CurrentTrack -eq 2 ]; then
-            CurrentTrack=$(cat $TR)
-            echo "loadfile "$CDDUMP"track0"$CurrentTrack".cdda.wav" > $CDCTRL
-        fi
-        if [ $CurrentTrack -eq 3 ]; then
-            CurrentTrack=$(cat $TR)
-            echo "loadfile "$CDDUMP"track"$CurrentTrack".cdda.wav" > $CDCTRL
-        fi
+        #mplayer -nogui -nolirc -slave -quiet -input file=$CDCTRL -idle &
+        STARTTRACK=$(cat $TR)
+        ((STARTTRACK-=1))
+        ENDTRACK=$(cat $TTR)
+        for i in $(seq -f "%02g" 1 $ENDTRACK); do
+            echo "loadfile "$CDDUMP"track"$i".cdda.wav 1" > $CDCTRL
+        done
+        echo "pt_step $STARTTRACK"  > $CDCTRL
         touch $CDPLAY
     else
         if [ ! -f $CDPAUSE ]; then
@@ -114,8 +203,7 @@ do
             PrevTracksCD
             shift # past argument=value
             ;;
-        -s|--stop)
-            StopCD
+
             shift # past argument=value
             ;;
         -p|--play)
