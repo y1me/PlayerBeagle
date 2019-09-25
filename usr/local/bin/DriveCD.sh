@@ -170,6 +170,7 @@ PlayPauseCD()
     else
         if [ ! -f $CDPAUSE ]; then
             touch $CDPAUSE
+            sleep 0.5
             echo "pause" > $CDCTRL
         else
             rm $CDPAUSE
