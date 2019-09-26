@@ -66,6 +66,11 @@ NextTracksCD()
 PrevTracksCD()
 {
     if [ ! -f $CDPAUSE ] ; then
+        CURRENTTIME=$(cat $CDSTATTM | cut -d '=' -f 2 | cut -d '.' -f 1)
+        if [ $CURRENTTIME -gt 5 ]; then
+            echo "seek 0 1" > $CDCTRL
+            exit 0
+        fi
         LENGTHFILE=$(cat < $CDSTATTR) || exit
         if [ "${#LENGTHFILE}" -gt 25 ]; then
             echo >&2 "Invalid track info"
