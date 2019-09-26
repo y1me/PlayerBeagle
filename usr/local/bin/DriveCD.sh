@@ -132,6 +132,7 @@ LoadCD()
 StopCD()
 {
     pkill -9 mplayer
+    pkill -9 ReadCdStatus.sh
     if [ -f $CDPLAY ]; then
         rm $CDPLAY
     fi
