@@ -17,31 +17,48 @@ CDDUMP="/cdtmp/"
 NextTracksCD()
 {
     if [ ! -f $CDPAUSE ] ; then
-        NEXTTRACK=$(cat $CDSTATTR | cut -d 'k' -f 2 | cut -d '.' -f 1)
-        NEXTTRACK=$(echo "($NEXTTRACK + 1)" | bc)
-        if [ -f $CDPLAY ] ; then
-            if [ ${#NEXTTRACK} -eq 1 ]; then
-                TRACKTOPLAY=$CDDUMP"track0"$NEXTTRACK".cdda.wav"
-            else
-                TRACKTOPLAY=$CDDUMP"track"$NEXTTRACK".cdda.wav"
-            fi
-
-            if ls $TRACKTOPLAY; then
-                while [ $(stat -c%s $TRACKTOPLAY) -lt 300 ]; do
-                    sleep 1
-                done
-            else
-                pkill DumpCD.sh
-                pkill cdparanoia
-                DumpCD.sh $NEXTTRACK > /dev/null 2>&1 &
-                sleep 1
-                while [ $(stat -c%s $TRACKTOPLAY) -lt 300 ]; do
-                    sleep 1
-                done
-            fi
-            echo "pt_step 1" > $CDCTRL
+        LENGTHFILE=$(cat < $CDSTATTR) || exit
+        if [ "${#LENGTHFILE}" -gt 25 ]; then
+            echo >&2 "Invalid track info"
+            exit 1
         else
-            echo $NEXTTRACK > $TR
+            NEXTTRACK=$(cat $CDSTATTR | cut -d 'k' -f 2 | cut -d '.' -f 1)
+            NEXTTRACK=$(echo "($NEXTTRACK + 1)" | bc)
+            TOTALTRACKS=$(cat < $TTR) || exit
+            if [ $NEXTTRACK -gt $TOTALTRACKS ]; then 
+                NEXTTRACK=1
+            fi
+            if [ -f $CDPLAY ] ; then
+                if [ ${#NEXTTRACK} -eq 1 ]; then
+                    TRACKTOPLAY=$CDDUMP"track0"$NEXTTRACK".cdda.wav"
+                else
+                    TRACKTOPLAY=$CDDUMP"track"$NEXTTRACK".cdda.wav"
+                fi
+                if ls $NEXTTRACK".out" > /dev/null 2>&1; then
+                    while [ $(stat -c%s $TRACKTOPLAY) -lt 300 ]; do
+                        sleep 1
+                    done
+                else
+                    pkill DumpCD.sh
+                    pkill cdparanoia
+                    DumpCD.sh $NEXTTRACK > /dev/null 2>&1 &
+                    sleep 1
+                    while [ $(stat -c%s $TRACKTOPLAY) -lt 300 ]; do
+                        sleep 1
+                    done
+                fi
+
+                NEXTTRACK=$(cat $CDSTATTR | cut -d 'k' -f 2 | cut -d '.' -f 1)
+                NEXTTRACK=$(echo "($NEXTTRACK + 1)" | bc)
+                if [ $NEXTTRACK -gt $TOTALTRACKS ]; then 
+                    ((TOTALTRACKS=TOTALTRACKS-1))
+                    echo "pt_step -"$TOTALTRACKS > $CDCTRL
+                else
+                    echo "pt_step 1" > $CDCTRL
+                fi
+            else
+                echo $NEXTTRACK > $TR
+            fi
         fi
     fi
 }
@@ -49,31 +66,48 @@ NextTracksCD()
 PrevTracksCD()
 {
     if [ ! -f $CDPAUSE ] ; then
-        NEXTTRACK=$(cat $CDSTATTR | cut -d 'k' -f 2 | cut -d '.' -f 1)
-        NEXTTRACK=$(echo "($NEXTTRACK + 1)" | bc)
-        if [ -f $CDPLAY ] ; then
-            if [ ${#NEXTTRACK} -eq 1 ]; then
-                TRACKTOPLAY=$CDDUMP"track0"$NEXTTRACK".cdda.wav"
-            else
-                TRACKTOPLAY=$CDDUMP"track"$NEXTTRACK".cdda.wav"
-            fi
-
-            if ls $TRACKTOPLAY; then
-                while [ $(stat -c%s $TRACKTOPLAY) -lt 300 ]; do
-                    sleep 1
-                done
-            else
-                pkill DumpCD.sh
-                pkill cdparanoia
-                DumpCD.sh $NEXTTRACK > /dev/null 2>&1 &
-                sleep 1
-                while [ $(stat -c%s $TRACKTOPLAY) -lt 300 ]; do
-                    sleep 1
-                done
-            fi
-            echo "pt_step -1" > $CDCTRL
+        LENGTHFILE=$(cat < $CDSTATTR) || exit
+        if [ "${#LENGTHFILE}" -gt 25 ]; then
+            echo >&2 "Invalid track info"
+            exit 1
         else
-            echo $NEXTTRACK > $TR
+            NEXTTRACK=$(cat $CDSTATTR | cut -d 'k' -f 2 | cut -d '.' -f 1)
+            NEXTTRACK=$(echo "($NEXTTRACK - 1)" | bc)
+            TOTALTRACKS=$(cat < $TTR) || exit
+            if [ $NEXTTRACK -eq 0 ]; then 
+                NEXTTRACK=$TOTALTRACKS
+            fi
+            if [ -f $CDPLAY ] ; then
+                if [ ${#NEXTTRACK} -eq 1 ]; then
+                    TRACKTOPLAY=$CDDUMP"track0"$NEXTTRACK".cdda.wav"
+                else
+                    TRACKTOPLAY=$CDDUMP"track"$NEXTTRACK".cdda.wav"
+                fi
+
+                if ls $NEXTTRACK".out" > /dev/null 2>&1; then
+                    while [ $(stat -c%s $TRACKTOPLAY) -lt 300 ]; do
+                        sleep 1
+                    done
+                else
+                    pkill DumpCD.sh
+                    pkill cdparanoia
+                    DumpCD.sh $NEXTTRACK > /dev/null 2>&1 &
+                    sleep 1
+                    while [ $(stat -c%s $TRACKTOPLAY) -lt 300 ]; do
+                        sleep 1
+                    done
+                fi
+                NEXTTRACK=$(cat $CDSTATTR | cut -d 'k' -f 2 | cut -d '.' -f 1)
+                NEXTTRACK=$(echo "($NEXTTRACK - 1)" | bc)
+                if [ $NEXTTRACK -eq 0 ]; then 
+                    ((TOTALTRACKS=TOTALTRACKS-1))
+                    echo "pt_step "$TOTALTRACKS > $CDCTRL
+                else
+                    echo "pt_step -1" > $CDCTRL
+                fi
+            else
+                echo $NEXTTRACK > $TR
+            fi
         fi
     fi
 }
@@ -150,7 +184,6 @@ PlayPauseCD()
             echo "pt_step $STARTTRACK"  > $CDCTRL
 
         fi
-        read -p "jkhjh"
         ReadCdStatus.sh &
         touch $CDPLAY
     else
