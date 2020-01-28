@@ -123,10 +123,10 @@ LoadCD()
     touch $CDTRCL 
     touch $TR
     touch $CTR 
-    echo "0" > $TR
     if [ -f $TOC ]; then
         ParseTOC.py -b > $TTR				
         echo "1" > $CTR
+        echo "1" > $TR
     fi
 }
 StopCD()
@@ -224,6 +224,7 @@ do
             if [ -f $TOC ]; then
                 ParseTOC.py -b > $TTR
                 echo "1" > $CTR
+                echo "1" > $TR
             fi
             shift # past argument=value
             ;;

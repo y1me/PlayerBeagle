@@ -24,90 +24,142 @@ log()
 	logger -t ProcessIO $1
 }
 
-# Eject CD
-EjectCD()
+POWERSet()
 {
-    if [ -f $CDMD ]; then
-        DriveCD.sh --eject
-        if [ -f $INFO ]; then
-            rm $INFO
-        fi
+    if [ -f $PHMD ]; then
+        log "power pressed phono"
+    elif [ -f $SP1MD ]; then
+        log "power pressed spdif1"
+    elif [ -f $SP2MD ]; then
+        log "power pressed spdif2"
+    elif [ -f $ANGMD ]; then
+        log "power pressed analog"
+    elif [ -f $CDMD ]; then
+        # Eject/Load CD
+        DriveCD.sh -e
+        log "power pressed cdplayer"
+    elif [ -f $MPDMD ]; then
+        log "power pressed mpd"
+    else
+        log "power pressed cdplayer"
     fi
 }
 
-# Stop CD
-StopCD()
+DOWNSet()
 {
-	if [ -f $CDMD ]; then
-		if [ -f $CDPLAY ]; then
-			pkill mplayer
-			rm $CDPLAY
-		fi
-		if [ -f $CDPAUSE ]; then
-			rm $CDPAUSE
-		fi
-		WriteInfo.sh -r stop
-	fi
-
+    if [ -f $PHMD ]; then
+        log "down pressed phono"
+    elif [ -f $SP1MD ]; then
+        log "down pressed spdif1"
+    elif [ -f $SP2MD ]; then
+        log "down pressed spdif2"
+    elif [ -f $ANGMD ]; then
+        log "down pressed analog"
+    elif [ -f $CDMD ]; then
+        # Stop CD
+        DriveCD.sh -s
+        log "down pressed cdplayer"
+    elif [ -f $MPDMD ]; then
+        log "down pressed mpd"
+    else
+        log "down pressed cdplayer"
+    fi
+}
+RIGHTSet()
+{
+    if [ -f $PHMD ]; then
+        log "rigth pressed phono"
+    elif [ -f $SP1MD ]; then
+        log "rigth pressed spdif1"
+    elif [ -f $SP2MD ]; then
+        log "rigth pressed spdif2"
+    elif [ -f $ANGMD ]; then
+        log "rigth pressed analog"
+    elif [ -f $CDMD ]; then
+        # Next Tracks CD
+        DriveCD.sh -n
+        log "rigth pressed cdplayer"
+    elif [ -f $MPDMD ]; then
+        log "rigth pressed mpd"
+    else
+        log "rigth pressed cdplayer"
+    fi
 }
 
-# Next Tracks CD
-NextTracksCD()
+LEFTSet()
 {
-	if [ -f $CDMD ]; then
-		if [ -f $CDPLAY ]; then
-			echo "seek_chapter 1 0" > $CDCTRL
-		fi
-	fi
-
+    if [ -f $PHMD ]; then
+        log "left pressed phono"
+    elif [ -f $SP1MD ]; then
+        log "left pressed spdif1"
+    elif [ -f $SP2MD ]; then
+        log "left pressed spdif2"
+    elif [ -f $ANGMD ]; then
+        log "left pressed analog"
+    elif [ -f $CDMD ]; then
+        # Previous Tracks CD
+        DriveCD.sh -r
+        log "left pressed cdplayer"
+    elif [ -f $MPDMD ]; then
+        log "left pressed mpd"
+    else
+        log "left pressed cdplayer"
+    fi
 }
 
-# Previous Tracks CD
-PrevTracksCD()
+MENUSet()
 {
-	if [ -f $CDMD ]; then
-		if [ -f $CDPLAY ]; then
-			echo "seek_chapter -1 0" > $CDCTRL
-		fi
-	fi
-
+    if [ -f $PHMD ]; then
+        log "menu pressed phono"
+    elif [ -f $SP1MD ]; then
+        log "menu pressed spdif1"
+    elif [ -f $SP2MD ]; then
+        log "menu pressed spdif2"
+    elif [ -f $ANGMD ]; then
+        log "menu pressed analog"
+    elif [ -f $CDMD ]; then
+        log "menu pressed cdplayer"
+        # Play/Pause CD
+        bash -x DriveCD.sh -p
+    elif [ -f $MPDMD ]; then
+        log "menu pressed mpd"
+    else
+        log "menu pressed cdplayer"
+    fi
 }
 
-# Play/Pause CD
-PlayPauseCD()
+RGBVIDEOSet()
 {
-	if [ -f $CDMD ]; then
-		if [ ! -f $CDTRCL ]; then
-			ejectcd.sh
-			#sleep 3
-			checkcd.sh
-		
-			if [ -f $TOC ]; then
-				ParseTOC.py -b > $TTR				
-				echo "1" > $CTR
-			fi
-		fi
-	fi
-	if [ ! -e $CDCTRL ] ; then
-		mkfifo $CDCTRL
-	fi
-	if [ ! -f $CDPLAY ]; then
-                mplayer cdda://$(cat $CTR)-$(cat $TTR) -input file=$CDCTRL -idle &>/ramtmp/mplayer.log 2>/ramtmp/mplayer-err.log -cache 1000 &
-		touch $CDPLAY
-		WriteInfo.sh -s play
-	else
-		if [ ! -f $CDPAUSE ]; then
-			touch $CDPAUSE
-			echo "pause" > $CDCTRL
-			WriteInfo.sh -s pause
-		else
-			rm $CDPAUSE
-			echo "pause" > $CDCTRL
-			WriteInfo.sh -s play
-		fi
-			
-	fi
-		
+    if [ -f $PHMD ]; then
+        rm $PHMD
+        touch $SP1MD
+        log "set source spdif1"
+    elif [ -f $SP1MD ]; then
+        rm $SP1MD
+        touch $SP2MD
+        log "set source spdif2"
+    elif [ -f $SP2MD ]; then
+        rm $SP2MD
+        touch $ANGMD
+        log "set source analog"
+    elif [ -f $ANGMD ]; then
+        rm $ANGMD
+        touch $CDMD
+        log "set source cdplayer"
+    elif [ -f $CDMD ]; then
+        rm $CDMD
+        touch $MPDMD
+        log "set source mpd"
+    elif [ -f $MPDMD ]; then
+        rm $MPDMD
+        touch $PHMD
+        log "set source phono"
+    else
+        mkdir $DIRPL
+        touch $CDMD
+        log "set source cdplayer"
+    fi
+    SwitchSRC.sh
 }
 
 VOLUPManage()
@@ -206,56 +258,26 @@ while true; do
 	fi
 	case "$line" in
 		POWER)
-			#StopCD
-                        EjectCD
+                    POWERSet
 			line="";;
 		MENU)
-			PlayPauseCD
+                    MENUSet
 			line="";;
 		RIGHT)
-			NextTracksCD
+                    RIGHTSet
 			line="";;
 		LEFT)
-			PrevTracksCD
+                    LEFTSet
 			line="";;
 		DOWN)
-			#StopCD
+                    DOWNSet
 			line="";;
 		RECALL)
 			echo "test 2"
 			echo $line
 			line="";;
 		RGBVIDEO)
-			if [ -f $PHMD ]; then
-				rm $PHMD
-				touch $SP1MD
-				log "set source spdif1"
-			elif [ -f $SP1MD ]; then
-				rm $SP1MD
-				touch $SP2MD
-				log "set source spdif2"
-			elif [ -f $SP2MD ]; then
-				rm $SP2MD
-				touch $ANGMD
-				log "set source analog"
-			elif [ -f $ANGMD ]; then
-				rm $ANGMD
-				touch $CDMD
-				log "set source cdplayer"
-			elif [ -f $CDMD ]; then
-				rm $CDMD
-				touch $MPDMD
-				log "set source mpd"
-			elif [ -f $MPDMD ]; then
-				rm $MPDMD
-				touch $PHMD
-				log "set source phono"
-			else
-				mkdir $DIRPL
-				touch $CDMD
-				log "set source cdplayer"
-			fi
-			SwitchSRC.sh
+                    RGBVIDEOSet
 			line="";;
 		MUTE)
                     MUTEManage
