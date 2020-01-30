@@ -1,0 +1,12 @@
+[Unit]
+Description=Handle IHM audio player input (systemd service)
+
+[Service]
+ExecStartPre=/usr/local/bin/InitDac.sh
+ExecStart=/usr/local/bin/ProcessIO.sh
+Restart=always
+RestartSec=5
+Type=Idle
+
+[Install]
+WantedBy=multi-user.target
