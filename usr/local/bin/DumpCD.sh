@@ -35,7 +35,7 @@ cd $CDDUMP
 for i in $( eval echo {$1..$(cat $TTR)} )
 do
     if [ ! -f "$CDDUMP$i.out" ]; then 
-        cdparanoia -S 16 $i-$i -B  
+        cdparanoia -S 12 $i-$i -B  
         touch "$CDDUMP$i.out"
     fi
 done

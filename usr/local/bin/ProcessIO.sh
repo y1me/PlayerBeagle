@@ -8,13 +8,13 @@ SP2MD="/etc/cdplayer/spdif2"
 MPDMD="/etc/cdplayer/mpd"
 PHMD="/etc/cdplayer/phono"
 DIRPL="/etc/cdplayer"
-CDTRCL="/ramtmp/CDTrayClose"
+CDTRCL="/tmp/CDTrayClose"
 TOC="/ramtmp/toc"
 TTR="/ramtmp/Ttracks"
 CTR="/ramtmp/Ctracks"
 CDPLAY="/ramtmp/CDisPlaying"
 CDPAUSE="/ramtmp/CDisPausing"
-CDCTRL="/ramtmp/cdcontrol"
+CDCTRL="/tmp/cdcontrol"
 VOLCF="/etc/cdplayer/Volume.conf"
 MUTE="/ramtmp/mute"
 INFO="/ramtmp/inforunning"
@@ -36,7 +36,7 @@ POWERSet()
         log "power pressed analog"
     elif [ -f $CDMD ]; then
         # Eject/Load CD
-        DriveCD.sh -e
+        DriveCD.sh -e &
         log "power pressed cdplayer"
     elif [ -f $MPDMD ]; then
         log "power pressed mpd"
@@ -57,7 +57,7 @@ DOWNSet()
         log "down pressed analog"
     elif [ -f $CDMD ]; then
         # Stop CD
-        DriveCD.sh -s
+        DriveCD.sh -s &
         log "down pressed cdplayer"
     elif [ -f $MPDMD ]; then
         log "down pressed mpd"
@@ -77,7 +77,7 @@ RIGHTSet()
         log "rigth pressed analog"
     elif [ -f $CDMD ]; then
         # Next Tracks CD
-        DriveCD.sh -n
+        DriveCD.sh -n &
         log "rigth pressed cdplayer"
     elif [ -f $MPDMD ]; then
         log "rigth pressed mpd"
@@ -98,7 +98,7 @@ LEFTSet()
         log "left pressed analog"
     elif [ -f $CDMD ]; then
         # Previous Tracks CD
-        DriveCD.sh -r
+        DriveCD.sh -r &
         log "left pressed cdplayer"
     elif [ -f $MPDMD ]; then
         log "left pressed mpd"
@@ -120,7 +120,7 @@ MENUSet()
     elif [ -f $CDMD ]; then
         log "menu pressed cdplayer"
         # Play/Pause CD
-        bash -x DriveCD.sh -p
+        /root/PlayerBeagle/usr/local/bin/DriveCD.sh -p &
     elif [ -f $MPDMD ]; then
         log "menu pressed mpd"
     else

@@ -1,6 +1,6 @@
 #!/bin/bash
 CDPLOG="/ramtmp/mplayer.log"
-CDCTRL="/ramtmp/cdcontrol"
+CDCTRL="/tmp/cdcontrol"
 CDPLAY="/ramtmp/CDisPlaying"
 
 if [ -f $CDPLAY ]; then

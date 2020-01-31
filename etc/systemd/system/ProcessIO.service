@@ -2,6 +2,7 @@
 Description=Handle IHM audio player input (systemd service)
 
 [Service]
+User=root
 ExecStartPre=/usr/local/bin/InitDac.sh
 ExecStart=/usr/local/bin/ProcessIO.sh
 Restart=always

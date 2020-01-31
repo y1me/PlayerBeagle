@@ -3,10 +3,11 @@
 
 CDTRCL="/ramtmp/CDTrayClose"
 TOC="/ramtmp/toc"
-CDCTRL="/ramtmp/cdcontrol"
+CDCTRL="/tmp/cdcontrol"
 TTR="/ramtmp/Ttracks"
 TR="/ramtmp/Tracks"
 CTR="/ramtmp/Ctracks"
+CDCMD="/ramtmp/CDCommandisPending"
 CDPLAY="/ramtmp/CDisPlaying"
 CDPAUSE="/ramtmp/CDisPausing"
 CDSTATTR="/cdtmp/CDStatusTracks"
@@ -14,9 +15,15 @@ CDSTATTM="/cdtmp/CDStatusTime"
 CDSTATPP="/cdtmp/CDStatusPercent"
 CDDUMP="/cdtmp/"
 
+log()
+{
+    logger -t DriveCD $1
+}
+
 NextTracksCD()
 {
     if [ ! -f $CDPAUSE ] ; then
+        log "jump next track"
         LENGTHFILE=$(cat < $CDSTATTR) || exit
         if [ "${#LENGTHFILE}" -gt 25 ]; then
             echo >&2 "Invalid track info"
@@ -66,6 +73,7 @@ NextTracksCD()
 PrevTracksCD()
 {
     if [ ! -f $CDPAUSE ] ; then
+        log "jump previous track"
         CURRENTTIME=$(cat $CDSTATTM | cut -d '=' -f 2 | cut -d '.' -f 1)
         if [ $CURRENTTIME -gt 5 ]; then
             echo "seek 0 1" > $CDCTRL
@@ -119,6 +127,7 @@ PrevTracksCD()
 
 LoadCD()
 {
+    log "Close tray and load CD"
     eject -t && checkcd.sh 
     touch $CDTRCL 
     touch $TR
@@ -131,8 +140,10 @@ LoadCD()
 }
 StopCD()
 {
+    log "Stop playing CD"
     pkill -9 mplayer
     pkill -9 ReadCdStatus.sh
+    rm -rf $CDCTRL
     if [ -f $CDPLAY ]; then
         rm $CDPLAY
     fi
@@ -153,57 +164,89 @@ PlayPauseCD()
         mkfifo $CDCTRL
     fi
     if [ ! -f $CDPLAY ]; then
+        log "play cd"
         STARTTRACK=$(cat $TR)
         rm $CDDUMP* 
+        pkill mplayer
         pkill ReadCdStatus.sh
         pkill DumpCD.sh
         pkill cdparanoia
+        log "kill previous process"
         DumpCD.sh 1 > /dev/null 2>&1 &
+        log "Rip CD in RAM"
         while [ ! -f $CDDUMP"track01.cdda.wav" ]; do
             sleep 1
+            log "wait track n°1 creation"
         done
         while [ $(stat -c%s $CDDUMP"track01.cdda.wav") -lt 300 ]; do
             sleep 1
+            log "wait track n°1 first data"
         done
         if [ $STARTTRACK -gt 1 ]; then
             pkill DumpCD.sh
             pkill cdparanoia
             DumpCD.sh $(cat $TR) > /dev/null 2>&1 &
+            log "RIP CD in RAM"
+            log "Don't start from track n°1 - kill previous process"
             while [ ! -f $($CDDUMP$( $CDDUMP | grep $(cat $TR))) ]; do
                 sleep 1
+                log "Don't start from track n°1 - wait track X creation"
             done
             while [ $(stat -c%s $CDDUMP$(ls $CDDUMP | grep $(cat $TR))) -lt 300 ]; do
                 sleep 1
+                log "Don't start from track n°1 -wait trackX first data"
             done
         fi
-        pkill mplayer
         sleep 1
         mplayer -nogui -nolirc -slave -quiet -input file=$CDCTRL -idle &>/ramtmp/mplayer.log 2>/ramtmp/mplayer-err.log &
+        log "mplayer started"
         #mplayer -nogui -nolirc -slave -quiet -input file=$CDCTRL -idle &
         ENDTRACK=$(cat $TTR)
-        sleep 1
-        for i in $(seq -f "%02g" 1 $ENDTRACK); do
-            echo "loadfile "$CDDUMP"track"$i".cdda.wav 1" > $CDCTRL
+        sleep 0.3
+        TRACKLIST=$(seq -f "%02g" 1 $ENDTRACK)
+        log "Track list : $TRACKLIST"
+        COUNTER=1
+        while [  $COUNTER -lt $ENDTRACK ]; do
+            #echo "The counter is $COUNTER"
+            #echo "loadfile "$CDDUMP"track"$(printf %02g $COUNTER)".cdda.wav 1" > $CDCTRL
+            echo "loadfile "$CDDUMP"track"$(printf %02g $COUNTER)".cdda.wav 1" > $CDCTRL
+            ((COUNTER=COUNTER+1)) 
+            sleep 0.3
         done
+         #   echo "loadfile "$CDDUMP"track"$i".cdda.wav 1" > $CDCTRL
+         #  log "loadfile "$CDDUMP"track"$i".cdda.wav 1"
+            log "Playlist loaded"
         if [ $STARTTRACK -gt 1 ]; then
             ((STARTTRACK-=1))
             echo "pt_step $STARTTRACK"  > $CDCTRL
 
         fi
         ReadCdStatus.sh &
+        log "Start CD supervisor"
         touch $CDPLAY
+        log "job done"
     else
         if [ ! -f $CDPAUSE ]; then
+            log "pause cd"
             touch $CDPAUSE
             sleep 0.5
             echo "pause" > $CDCTRL
         else
+            log "resume cd"
             rm $CDPAUSE
             echo "pause" > $CDCTRL
         fi
 
     fi
 }
+
+if [ -f $CDCMD ]; then 
+    log "Discard DriveCD command"
+    exit 1
+else 
+    log "DriveCD lock"
+    touch $CDCMD
+fi
 
 for i in "$@"
 do
@@ -254,3 +297,8 @@ do
             ;;
     esac
 done
+
+if [ -f $CDCMD ]; then 
+    rm $CDCMD
+    log "DriveCD unlock"
+fi

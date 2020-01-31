@@ -1,5 +1,5 @@
 #!/bin/bash
-CDCTRL="/ramtmp/cdcontrol"
+CDCTRL="/tmp/cdcontrol"
 CDPLAY="/ramtmp/CDisPlaying"
 CDPAUSE="/ramtmp/CDisPausing"
 CDSTATTR="/cdtmp/CDStatusTracks"

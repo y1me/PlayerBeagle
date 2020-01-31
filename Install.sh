@@ -21,4 +21,6 @@ cp -r ./usr /
 cp -r ./etc /
 cp -r ./boot /
 
+systemctl daemon-reload
+systemctl restart ProcessIO.service
 echo "Copy done!"
