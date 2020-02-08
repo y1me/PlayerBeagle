@@ -136,6 +136,7 @@ LoadCD()
         ParseTOC.py -b > $TTR				
         echo "1" > $CTR
         echo "1" > $TR
+        DumpCD.sh 1 > /dev/null 2>&1 &
     fi
 }
 StopCD()
@@ -143,7 +144,6 @@ StopCD()
     log "Stop playing CD"
     pkill -9 mplayer
     pkill -9 ReadCdStatus.sh
-    rm -rf $CDCTRL
     if [ -f $CDPLAY ]; then
         rm $CDPLAY
     fi
@@ -169,11 +169,13 @@ PlayPauseCD()
         rm $CDDUMP* 
         pkill mplayer
         pkill ReadCdStatus.sh
-        pkill DumpCD.sh
-        pkill cdparanoia
-        log "kill previous process"
-        DumpCD.sh 1 > /dev/null 2>&1 &
-        log "Rip CD in RAM"
+        if [ ! -f $CDDUMP"1.out" ]; then
+            pkill DumpCD.sh
+            pkill cdparanoia
+            log "kill previous process"
+            DumpCD.sh 1 > /dev/null 2>&1 &
+            log "Rip CD in RAM"
+        fi
         while [ ! -f $CDDUMP"track01.cdda.wav" ]; do
             sleep 1
             log "wait track n°1 creation"
@@ -183,11 +185,13 @@ PlayPauseCD()
             log "wait track n°1 first data"
         done
         if [ $STARTTRACK -gt 1 ]; then
-            pkill DumpCD.sh
-            pkill cdparanoia
-            DumpCD.sh $(cat $TR) > /dev/null 2>&1 &
-            log "RIP CD in RAM"
-            log "Don't start from track n°1 - kill previous process"
+            if [ ! -f "$CDDUMP$(cat $TR).out" ]; then
+                pkill DumpCD.sh
+                pkill cdparanoia
+                DumpCD.sh $(cat $TR) > /dev/null 2>&1 &
+                log "RIP CD in RAM"
+                log "Don't start from track n°1 - kill previous process"
+            fi
             while [ ! -f $($CDDUMP$( $CDDUMP | grep $(cat $TR))) ]; do
                 sleep 1
                 log "Don't start from track n°1 - wait track X creation"
@@ -258,6 +262,7 @@ do
         -e|--eject)
             StopCD
             ejectcd.sh
+            rm -rf $CDCTRL
             if [ -f $CDTRCL ]; then
                 rm $CDPLAY
                 rm $CDPAUSE

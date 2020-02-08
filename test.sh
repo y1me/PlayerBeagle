@@ -1,23 +1,38 @@
 #!/bin/bash
 
-echo $0
-echo $@
-echo $?
+FCMD="/ramtmp/CommandIHM"
+CDMD="/etc/cdplayer/cdplayer"
+ANGMD="/etc/cdplayer/analog"
+SP1MD="/etc/cdplayer/spdif1"
+SP2MD="/etc/cdplayer/spdif2"
+MPDMD="/etc/cdplayer/mpd"
+PHMD="/etc/cdplayer/phono"
+DIRPL="/etc/cdplayer"
+CDTRCL="/ramtmp/CDTrayClose"
+TOC="/ramtmp/toc"
+TTR="/ramtmp/Ttracks"
+CTR="/ramtmp/Ctracks"
+CDPLAY="/ramtmp/CDisPlaying"
+CDPAUSE="/ramtmp/CDisPausing"
+CDCTRL="/ramtmp/cdcontrol"
+CDDUMP="/cdtmp/"
+VOLCF="/etc/cdplayer/Volume.conf"
+MUTE="/ramtmp/mute"
+INFO="/ramtmp/inforunning"
+# Log in syslog
+log()
+{
+    logger -t ProcessIO $1
+}
 
-PWD=$(pwd)
-
-if [ $EUID != 0 ]; then
-    sudo "$0" "$@"
-    exit $?
-fi
-
-if [[ $EUID -ne 0 ]]; then
-    echo "You must be a root user" 
-    exit 1
-else
-    echo "You are root"
-fi
-
-echo $PWD
-
-cp -r ./usr /
+cd $CDDUMP
+for i in $( eval echo {1..$(cat $TTR)} )
+do
+        if [ ! -f "$CDDUMP$i.out" ]; then 
+            if [ ${#i} -eq 1 ]; then
+                echo $CDDUMP"track0"$i".cdda.wav"
+            else
+                echo $CDDUMP"track"$i".cdda.wav"
+            fi
+        fi
+    done

@@ -120,7 +120,7 @@ MENUSet()
     elif [ -f $CDMD ]; then
         log "menu pressed cdplayer"
         # Play/Pause CD
-        /root/PlayerBeagle/usr/local/bin/DriveCD.sh -p &
+        DriveCD.sh -p &
     elif [ -f $MPDMD ]; then
         log "menu pressed mpd"
     else
