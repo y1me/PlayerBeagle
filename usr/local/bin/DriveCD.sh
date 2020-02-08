@@ -77,6 +77,10 @@ PrevTracksCD()
         CURRENTTIME=$(cat $CDSTATTM | cut -d '=' -f 2 | cut -d '.' -f 1)
         if [ $CURRENTTIME -gt 5 ]; then
             echo "seek 0 1" > $CDCTRL
+            if [ -f $CDCMD ]; then 
+                rm $CDCMD
+                log "DriveCD unlock"
+            fi
             exit 0
         fi
         LENGTHFILE=$(cat < $CDSTATTR) || exit
@@ -133,6 +137,7 @@ LoadCD()
     touch $TR
     touch $CTR 
     if [ -f $TOC ]; then
+        rm $CDDUMP* 
         ParseTOC.py -b > $TTR				
         echo "1" > $CTR
         echo "1" > $TR
@@ -152,6 +157,23 @@ StopCD()
     fi
 }
 
+CleanDump()
+{
+    for i in $( eval echo {1..$(cat $TTR)} )
+    do
+        if [ ! -f "$CDDUMP$i.out" ]; then 
+            if [ ${#i} -eq 1 ]; then
+                DMPTR=$CDDUMP"track0"$i".cdda.wav"
+            else
+                DMPTR=$CDDUMP"track"$i".cdda.wav"
+            fi
+            if [ -f $DMPTR ]; then
+                rm $DMPTR
+            fi
+        fi
+    done
+}
+
 PlayPauseCD()
 {
     if [ ! -f $CDTRCL ]; then
@@ -166,16 +188,16 @@ PlayPauseCD()
     if [ ! -f $CDPLAY ]; then
         log "play cd"
         STARTTRACK=$(cat $TR)
-        rm $CDDUMP* 
         pkill mplayer
         pkill ReadCdStatus.sh
-        if [ ! -f $CDDUMP"1.out" ]; then
-            pkill DumpCD.sh
-            pkill cdparanoia
-            log "kill previous process"
-            DumpCD.sh 1 > /dev/null 2>&1 &
-            log "Rip CD in RAM"
-        fi
+        CleanDump
+        #if [ ! -f $CDDUMP"1.out" ]; then
+        pkill DumpCD.sh
+        pkill cdparanoia
+        log "kill previous process"
+        log "Rip CD in RAM"
+        DumpCD.sh 1 > /dev/null 2>&1 &
+        #fi
         while [ ! -f $CDDUMP"track01.cdda.wav" ]; do
             sleep 1
             log "wait track n°1 creation"

@@ -25,7 +25,6 @@ log()
     logger -t ProcessIO $1
 }
 
-cd $CDDUMP
 for i in $( eval echo {1..$(cat $TTR)} )
 do
         if [ ! -f "$CDDUMP$i.out" ]; then 
