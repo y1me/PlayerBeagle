@@ -1,5 +1,6 @@
 [Unit]
 Description=Handle IHM audio player input (systemd service)
+After=GpioInit.service
 
 [Service]
 User=root
