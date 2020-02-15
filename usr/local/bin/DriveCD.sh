@@ -293,6 +293,11 @@ do
             else
                 rm $TOC 
                 rm $CDDUMP* 
+                if [ ! -f $MUTE ]; then
+                    touch $MUTE
+                fi
+                PCM1792AMute.sh ON
+                log "eject cd, mute on"
             fi
             if [ -f $TOC ]; then
                 ParseTOC.py -b > $TTR
@@ -313,10 +318,20 @@ do
 
         -s|--stop)
             StopCD
+            if [ ! -f $MUTE ]; then
+                touch $MUTE
+            fi
+            PCM1792AMute.sh ON
+            log "stop cd, mute on"
             shift # past argument=value
             ;;
         -p|--play)
             PlayPauseCD
+            if [ -f $MUTE ]; then
+                rm $MUTE
+            fi
+            PCM1792AMute.sh OFF
+            log "play cd, mute off"
             shift # past argument=value
             ;;
         --default)
