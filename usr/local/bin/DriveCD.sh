@@ -290,11 +290,15 @@ do
                 rm $CDPAUSE
                 #sleep 3
                 checkcd.sh
+            else
+                rm $TOC 
+                rm $CDDUMP* 
             fi
             if [ -f $TOC ]; then
                 ParseTOC.py -b > $TTR
                 echo "1" > $CTR
                 echo "1" > $TR
+                DumpCD.sh 1 > /dev/null 2>&1 &
             fi
             shift # past argument=value
             ;;
