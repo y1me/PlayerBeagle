@@ -17,10 +17,17 @@ apt install i2c-tools -y
 apt install abcde -y 
 apt install cd-discid -y
 
+pkill DumpCD.sh
+pkill cdparanoia
+
 cp -r ./usr /
 cp -r ./etc /
 cp -r ./boot /
 
+rm /ramtmp/*
+rm /cdtmp/*
+
 systemctl daemon-reload
+systemctl restart ReadIHM.service
 systemctl restart ProcessIO.service
 echo "Copy done!"

@@ -232,7 +232,7 @@ PlayPauseCD()
         TRACKLIST=$(seq -f "%02g" 1 $ENDTRACK)
         log "Track list : $TRACKLIST"
         COUNTER=1
-        while [  $COUNTER -lt $ENDTRACK ]; do
+        while [  $COUNTER -le $ENDTRACK ]; do
             #echo "The counter is $COUNTER"
             #echo "loadfile "$CDDUMP"track"$(printf %02g $COUNTER)".cdda.wav 1" > $CDCTRL
             echo "loadfile "$CDDUMP"track"$(printf %02g $COUNTER)".cdda.wav 1" > $CDCTRL
