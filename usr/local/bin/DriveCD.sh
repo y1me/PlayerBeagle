@@ -241,7 +241,12 @@ PlayPauseCD()
         done
          #   echo "loadfile "$CDDUMP"track"$i".cdda.wav 1" > $CDCTRL
          #  log "loadfile "$CDDUMP"track"$i".cdda.wav 1"
-            log "Playlist loaded"
+        log "Playlist loaded"
+        if [ -f $MUTE ]; then
+            rm $MUTE
+        fi
+        PCM1792AMute.sh OFF
+        log "play cd, mute off"
         if [ $STARTTRACK -gt 1 ]; then
             ((STARTTRACK-=1))
             echo "pt_step $STARTTRACK"  > $CDCTRL
@@ -257,7 +262,17 @@ PlayPauseCD()
             touch $CDPAUSE
             sleep 0.5
             echo "pause" > $CDCTRL
+            if [ ! -f $MUTE ]; then
+                touch $MUTE
+            fi
+            PCM1792AMute.sh ON
+            log "pause cd, mute on"
         else
+            if [ -f $MUTE ]; then
+                rm $MUTE
+            fi
+            PCM1792AMute.sh OFF
+            log "play cd, mute off"
             log "resume cd"
             rm $CDPAUSE
             echo "pause" > $CDCTRL
@@ -327,11 +342,6 @@ do
             ;;
         -p|--play)
             PlayPauseCD
-            if [ -f $MUTE ]; then
-                rm $MUTE
-            fi
-            PCM1792AMute.sh OFF
-            log "play cd, mute off"
             shift # past argument=value
             ;;
         --default)
