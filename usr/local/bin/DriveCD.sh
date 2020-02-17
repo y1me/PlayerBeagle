@@ -306,6 +306,7 @@ do
                 #sleep 3
                 checkcd.sh
             else
+                pkill -9 DumpCD.sh
                 rm $TOC 
                 rm $CDDUMP* 
                 if [ ! -f $MUTE ]; then

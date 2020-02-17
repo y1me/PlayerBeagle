@@ -248,6 +248,7 @@ VolumeInit()
 
 VolumeInit
 sleep 2
+rm /cdtmp/*
 SwitchSRC.sh
 while true; do
 

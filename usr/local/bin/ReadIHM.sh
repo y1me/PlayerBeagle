@@ -8,6 +8,7 @@ if [ ! -d "/ramtmp" ]; then
 fi
 
 mount -t tmpfs -o size=10m tmpfs /ramtmp
+rm /ramtmp/* 
 stty -F $UART 115200 cs8 -echo -icanon min 1
 touch $CMDIHM
 while read -r line < $UART; do
