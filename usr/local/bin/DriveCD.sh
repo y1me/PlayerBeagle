@@ -48,7 +48,7 @@ NextTracksCD()
                 else
                     pkill DumpCD.sh
                     pkill cdparanoia
-                    nice -n 2 DumpCD.sh $NEXTTRACK > /dev/null 2>&1 &
+                    nice DumpCD.sh $NEXTTRACK > /dev/null 2>&1 &
                     sleep 1
                     while [ $(stat -c%s $TRACKTOPLAY) -lt 300 ]; do
                         sleep 1
@@ -108,7 +108,7 @@ PrevTracksCD()
                 else
                     pkill DumpCD.sh
                     pkill cdparanoia
-                    nice -n 2 DumpCD.sh $NEXTTRACK > /dev/null 2>&1 &
+                    nice DumpCD.sh $NEXTTRACK > /dev/null 2>&1 &
                     sleep 1
                     while [ $(stat -c%s $TRACKTOPLAY) -lt 300 ]; do
                         sleep 1
@@ -141,7 +141,7 @@ LoadCD()
         ParseTOC.py -b > $TTR				
         echo "1" > $CTR
         echo "1" > $TR
-        nice -n 2 DumpCD.sh 1 > /dev/null 2>&1 &
+        nice DumpCD.sh 1 > /dev/null 2>&1 &
     fi
 }
 StopCD()
@@ -196,7 +196,7 @@ PlayPauseCD()
         pkill cdparanoia
         log "kill previous process"
         log "Rip CD in RAM"
-        nice -n 2 DumpCD.sh 1 > /dev/null 2>&1 &
+        nice DumpCD.sh 1 > /dev/null 2>&1 &
         #fi
         while [ ! -f $CDDUMP"track01.cdda.wav" ]; do
             sleep 1
@@ -210,7 +210,7 @@ PlayPauseCD()
             if [ ! -f "$CDDUMP$(cat $TR).out" ]; then
                 pkill DumpCD.sh
                 pkill cdparanoia
-                nice -n 2 DumpCD.sh $(cat $TR) > /dev/null 2>&1 &
+                nice DumpCD.sh $(cat $TR) > /dev/null 2>&1 &
                 log "RIP CD in RAM"
                 log "Don't start from track n°1 - kill previous process"
             fi
@@ -224,7 +224,7 @@ PlayPauseCD()
             done
         fi
         sleep 1
-        nice mplayer -nogui -nolirc -slave -quiet -input file=$CDCTRL -idle &>/ramtmp/mplayer.log 2>/ramtmp/mplayer-err.log &
+        nice -n 5 mplayer -nogui -nolirc -slave -quiet -input file=$CDCTRL -idle &>/ramtmp/mplayer.log 2>/ramtmp/mplayer-err.log &
         log "mplayer started"
         #mplayer -nogui -nolirc -slave -quiet -input file=$CDCTRL -idle &
         ENDTRACK=$(cat $TTR)
@@ -252,7 +252,7 @@ PlayPauseCD()
             echo "pt_step $STARTTRACK"  > $CDCTRL
 
         fi
-        ReadCdStatus.sh &
+        nice -n 4 ReadCdStatus.sh &
         log "Start CD supervisor"
         touch $CDPLAY
         log "job done"
