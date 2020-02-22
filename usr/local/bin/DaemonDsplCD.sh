@@ -5,6 +5,7 @@ CDPLAY="/ramtmp/CDisPlaying"
 CDPAUSE="/ramtmp/CDisPausing"
 TOC="/ramtmp/toc"
 INFO="/ramtmp/inforunning"
+INFOTR="/ramtmp/infotransientrunning"
 COUNT=0
 
 if [ -f $TOC ] && [ -s $TOC ]; then
@@ -12,9 +13,11 @@ if [ -f $TOC ] && [ -s $TOC ]; then
 fi
 while true; do
     if [ ! -f $CDPLAY ] || [ ! -f $CDPAUSE ]; then
-        if [ ! -f $INFO ] && [ -f $TOC ] && [ -s $TOC ]; then
-            A=`echo "($(ParseTOC.py -l)/60)*100 + $(ParseTOC.py -l)%60" | bc`
-            WriteInfo.sh -t $(ParseTOC.py -b)$A
+        if [ ! -f $INFO ]  && [ ! -f $INFOTR ] && [ -f $TOC ] && [ -s $TOC ]; then
+            #A=`echo "($(ParseTOC.py -l)/60)*100 + $(ParseTOC.py -l)%60" | bc`
+
+            WriteInfo.sh -t $(ParseTOC.py -b)$(date -d@$(ParseTOC.py -l) -u +%M%S)
+            #WriteInfo.sh -t $(ParseTOC.py -b)$A
             COUNT=$[$COUNT+1]
             if [ $COUNT -ge 50 ] && [ -s $TOC ]; then
                 WriteInfo.sh -l "$(ParseTOC.py -a) $(ParseTOC.py -n)"

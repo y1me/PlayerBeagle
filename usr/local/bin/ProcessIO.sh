@@ -180,10 +180,10 @@ VOLUPManage()
         echo $vol > $VOLCF
         PCM1792AVolume.sh $vol >> /dev/null
         log "Volume send $vol"
-        WriteInfo.sh -r $((($vol-255)/2))"db"
+        Display_Transient.sh $((($vol-255)/2))"db" &
     else
         log "Volume max"
-        WriteInfo.sh -r "0db"
+        Display_Transient.sh "0db" &
 
     fi
 }
@@ -206,10 +206,10 @@ VOLDWManage()
         echo $vol > $VOLCF
         PCM1792AVolume.sh $vol >> /dev/null
         log "Volume send $vol"
-        WriteInfo.sh -r $((($vol-255)/2))"db"
+        Display_Transient.sh $((($vol-255)/2))"db" &
     else
         log "Volume min"
-        WriteInfo.sh -r "-128db"
+        Display_Transient.sh "-128db" &
     fi
 }
 
@@ -219,12 +219,12 @@ MUTEManage()
         touch $MUTE 
         log "mute on"
         PCM1792AMute.sh ON
-        WriteInfo.sh -r "mute"
+        Display_Transient.sh "mute" &
     else
         rm $MUTE 
         log "mute off"
         PCM1792AMute.sh OFF
-        WriteInfo.sh -r "sound"
+        Display_Transient.sh "sound" &
     fi
 
 }
