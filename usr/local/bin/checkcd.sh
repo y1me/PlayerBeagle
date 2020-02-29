@@ -14,7 +14,7 @@ checkdisc /dev/cdrom
 RET=$?
 	if [ $RET -eq 10 ]; then
 		log  "No disc"
-		WriteInfo.sh -r "nodisc"
+		#WriteInfo.sh -r "nodisc"
 		if [ -e $TOC ]; then
 			rm $TOC
 		fi
@@ -30,12 +30,12 @@ RET=$?
 		if [ -e $TOC ]; then
 			rm $TOC
 		fi
-		WriteInfo.sh -r "open"
+		#WriteInfo.sh -r "open"
 	fi
 
 	if [ $RET -eq 25 ]; then
 		log  "Drive not ready"
-		WriteInfo.sh -r "wait"
+		#WriteInfo.sh -r "wait"
 	fi
 
 	if [ $RET -eq 30 ]; then
@@ -47,7 +47,7 @@ RET=$?
                 sleep 1
 		GetCDdata.sh
 		log  "Copy TOC on /ramtmp/toc"
-                WriteInfo.sh -l "$(ParseTOC.py -a) $(ParseTOC.py -n)"
+                #WriteInfo.sh -l "$(ParseTOC.py -a) $(ParseTOC.py -n)"
 		STATUS=0;
 	fi
 

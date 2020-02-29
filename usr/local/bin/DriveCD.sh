@@ -305,6 +305,8 @@ do
                 rm $CDPAUSE
                 #sleep 3
                 checkcd.sh
+                log "load cd"
+                Display_Transient.sh "load"
             else
                 pkill -9 DumpCD.sh
                 rm $TOC 
@@ -314,6 +316,7 @@ do
                 fi
                 PCM1792AMute.sh ON
                 log "eject cd, mute on"
+                Display_Transient.sh "eject"
             fi
             if [ -f $TOC ]; then
                 ParseTOC.py -b > $TTR
@@ -339,10 +342,12 @@ do
             fi
             PCM1792AMute.sh ON
             log "stop cd, mute on"
+            Display_Transient.sh "stop"
             shift # past argument=value
             ;;
         -p|--play)
             PlayPauseCD
+            Display_Transient.sh "play"
             shift # past argument=value
             ;;
         --default)

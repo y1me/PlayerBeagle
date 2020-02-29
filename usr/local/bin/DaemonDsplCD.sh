@@ -27,7 +27,7 @@ while true; do
         if [ ! -f $TOC ]; then
             COUNT=$[$COUNT+1]
             if [ $COUNT -ge 50 ]; then
-                WriteInfo.sh -r "nodisc"
+                WriteInfo.sh -s "nodisc"
                 COUNT=1
             fi
         fi
