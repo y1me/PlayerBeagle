@@ -347,7 +347,11 @@ do
             ;;
         -p|--play)
             PlayPauseCD
-            Display_Transient.sh "play"
+            if [ -f $CDPAUSE ] ; then
+                Display_Transient.sh "pause"
+            else
+                Display_Transient.sh "play"
+            fi
             shift # past argument=value
             ;;
         --default)

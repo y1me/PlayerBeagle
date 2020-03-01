@@ -6,13 +6,18 @@ CDPAUSE="/ramtmp/CDisPausing"
 TOC="/ramtmp/toc"
 INFO="/ramtmp/inforunning"
 INFOTR="/ramtmp/infotransientrunning"
+CDTIMEPRINT="printCdTime.sh"
 COUNT=0
 
 if [ -f $TOC ] && [ -s $TOC ]; then
     WriteInfo.sh -l "$(ParseTOC.py -a) $(ParseTOC.py -n)"
 fi
 while true; do
-    if [ ! -f $CDPLAY ] || [ ! -f $CDPAUSE ]; then
+    if [ ! -f $CDPLAY ]; then
+        if pgrep "$CDTIMEPRINT" >/dev/null; then
+            echo "kill printCD"
+           pkill printCdTime.sh
+        fi
         if [ ! -f $INFO ]  && [ ! -f $INFOTR ] && [ -f $TOC ] && [ -s $TOC ]; then
             A=`echo "($(ParseTOC.py -l)/60)*100 + $(ParseTOC.py -l)%60" | bc`
 
@@ -31,7 +36,11 @@ while true; do
                 COUNT=1
             fi
         fi
-
+    else
+        if ! pgrep printCdTime.sh >/dev/null; then
+            echo "start printCD"
+            printCdTime.sh &
+        fi
     fi
     sleep 0.1
     if [ ! -f $CDMD ]; then
