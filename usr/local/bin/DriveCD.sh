@@ -14,6 +14,7 @@ CDSTATTR="/cdtmp/CDStatusTracks"
 CDSTATTM="/cdtmp/CDStatusTime"
 CDSTATPP="/cdtmp/CDStatusPercent"
 CDDUMP="/cdtmp/"
+INFO="/ramtmp/inforunning"
 
 log()
 {
@@ -286,6 +287,8 @@ if [ -f $CDCMD ]; then
     exit 1
 else 
     log "DriveCD lock"
+    rm $INFO
+    WriteInfo.sh -s "busy"
     touch $CDCMD
 fi
 

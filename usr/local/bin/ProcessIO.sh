@@ -36,6 +36,7 @@ POWERSet()
         log "power pressed analog"
     elif [ -f $CDMD ]; then
         # Eject/Load CD
+        #WriteInfo.sh -s "busy"
         DriveCD.sh -e &
         log "power pressed cdplayer"
     elif [ -f $MPDMD ]; then
@@ -57,6 +58,7 @@ DOWNSet()
         log "down pressed analog"
     elif [ -f $CDMD ]; then
         # Stop CD
+        #WriteInfo.sh -s "busy"
         DriveCD.sh -s &
         log "down pressed cdplayer"
     elif [ -f $MPDMD ]; then
@@ -77,6 +79,7 @@ RIGHTSet()
         log "rigth pressed analog"
     elif [ -f $CDMD ]; then
         # Next Tracks CD
+        #WriteInfo.sh -s "busy"
         DriveCD.sh -n &
         log "rigth pressed cdplayer"
     elif [ -f $MPDMD ]; then
@@ -98,6 +101,7 @@ LEFTSet()
         log "left pressed analog"
     elif [ -f $CDMD ]; then
         # Previous Tracks CD
+        #WriteInfo.sh -s "busy"
         DriveCD.sh -r &
         log "left pressed cdplayer"
     elif [ -f $MPDMD ]; then
@@ -120,6 +124,7 @@ MENUSet()
     elif [ -f $CDMD ]; then
         log "menu pressed cdplayer"
         # Play/Pause CD
+        #WriteInfo.sh -s "busy"
         DriveCD.sh -p &
     elif [ -f $MPDMD ]; then
         log "menu pressed mpd"

@@ -19,6 +19,8 @@ case $1 in
         fi
         if [ ! -f $INFO ]; then
             touch $INFO
+            STRLENGTH=$(echo -n $2 | wc -m)
+            echo "sleep $(( $STRLENGTH * 2 )) ; rm $INFO" | at now > /dev/null 2>&1
         fi
         DATA="$(tr [A-Z] [a-z] <<< "$2")"
 	echo "~#"$CMD"="   $DATA   "~#" > $UART; exit 0
