@@ -288,8 +288,9 @@ if [ -f $CDCMD ]; then
 else 
     log "DriveCD lock"
     rm $INFO
-    WriteInfo.sh -s "busy"
     touch $CDCMD
+    sleep 0.5
+    WriteInfo.sh -s "busy"
 fi
 
 for i in "$@"

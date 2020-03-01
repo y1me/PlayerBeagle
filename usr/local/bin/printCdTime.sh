@@ -2,6 +2,7 @@
 
 FCMD="/ramtmp/CommandIHM"
 CDMD="/etc/cdplayer/cdplayer"
+CDCMD="/ramtmp/CDCommandisPending"
 ANGMD="/etc/cdplayer/analog"
 SP1MD="/etc/cdplayer/spdif1"
 SP2MD="/etc/cdplayer/spdif2"
@@ -41,7 +42,7 @@ while true; do
         TRACK=$(cat /cdtmp/CDStatusTracks | cut -d "k" -f 2 | cut -d "." -f 1)
         TIME=$(cat /cdtmp/CDStatusTime | cut -d " " -f 2 | cut -d "." -f 1)
         MINSEC=$(date -d@$TIME -u +%M:%S)
-        if [ ! -f $INFOTR ]; then
+        if [ ! -f $INFOTR ] && [ ! -f $CDCMD ]; then
             WriteInfo.sh -t $TRACK$(echo $MINSEC | tr -d :)
         fi
         ((COUNT=COUNT+1))
