@@ -305,6 +305,7 @@ do
             ejectcd.sh
             rm -rf $CDCTRL
             if [ -f $CDTRCL ]; then
+                WriteInfo.sh -s "load"
                 rm $CDPLAY
                 rm $CDPAUSE
                 #sleep 3
@@ -312,6 +313,7 @@ do
                 log "load cd"
                 Display_Transient.sh "load"
             else
+                WriteInfo.sh -s "eject"
                 pkill -9 DumpCD.sh
                 rm $TOC 
                 rm $CDDUMP* 
@@ -331,10 +333,12 @@ do
             shift # past argument=value
             ;;
         -n|--next)
+            WriteInfo.sh -s "next"
             NextTracksCD
             shift # past argument=value
             ;;
         -r|--previous)
+            WriteInfo.sh -s "prev"
             PrevTracksCD
             shift # past argument=value
             ;;
@@ -350,6 +354,7 @@ do
             shift # past argument=value
             ;;
         -p|--play)
+            WriteInfo.sh -s "cache"
             PlayPauseCD
             if [ -f $CDPAUSE ] ; then
                 Display_Transient.sh "pause"
